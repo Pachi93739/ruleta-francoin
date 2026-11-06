@@ -492,29 +492,20 @@ function doubleBlackjack(){
   return;
  }
 
- // Cambiamos la fase primero: así no puede activarse también PEDIR CARTA.
- bjPhase='dealer';
-
- $('bjDecision').style.display='none';
- $('bjPlay').style.display='none';
-
- // Se cobra la segunda apuesta y se duplica el valor de la apuesta.
+ // Cobrar la apuesta adicional y duplicar la apuesta.
  bananas-=bjBet;
  bjBet*=2;
 
- // Se revela tu segunda carta y recibís exactamente una carta adicional.
- bjPlayer.push(drawCard());
+ // Pasar a la fase de juego normal, sin robar ninguna carta.
+ bjPhase='playing';
+
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='grid';
+
+ $('bjResult').textContent='¡Apuesta duplicada! Podés pedir carta o plantarte.';
 
  renderCards();
  updateWallet();
-
- if(handValue(bjPlayer)>21){
-  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
-  return;
- }
-
- // El dealer juega automáticamente después de duplicar.
- dealerTurn();
 }
 
 function hitBlackjack(){
