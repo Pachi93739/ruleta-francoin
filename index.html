@@ -11,7 +11,7 @@ main{max-width:850px;margin:auto}.top{text-align:center;margin-bottom:16px}.top 
 .panel{background:#1b2434;border:1px solid #35435a;border-radius:20px;padding:20px;box-shadow:0 12px 35px #0004}.panel h2{margin:0 0 5px}.panel p{margin:5px 0 14px}.page{display:none}.page.active{display:block}
 .wheel-wrap{position:relative;width:min(78vw,310px);aspect-ratio:1;margin:14px auto}.pointer{position:absolute;z-index:2;top:-7px;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-top:27px solid #f7d36b}canvas.wheel{width:100%;height:100%;border-radius:50%;border:7px solid #e5c36b;box-shadow:0 8px 25px #0008;transition:transform 4s cubic-bezier(.12,.72,.12,1)}.center{position:absolute;inset:42%;border-radius:50%;background:#e5c36b;border:5px solid white;pointer-events:none}
 label{display:block;font-weight:650;margin:12px 0 7px}input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;background:#111a29;color:white;font-size:16px}.colors{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.color{border:2px solid transparent;border-radius:11px;padding:11px 4px;color:white;font-weight:700;cursor:pointer;background:#303b50}.color.active{border-color:#f7d36b}.red{background:#c93642}.black{background:#101216}.green{background:#16834a}
-.action{width:100%;padding:13px;margin-top:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#e9bd58,#f4d98e);color:#20202a;font-size:16px;font-weight:850;cursor:pointer}.secondary{background:#35445d;color:#fff}.action:disabled{opacity:.5;cursor:not-allowed}.result{margin-top:13px;padding:12px;border-radius:11px;text-align:center;background:#111a29;min-height:48px}.good{color:#70e6a0}.bad{color:#ff818b}
+.action{width:100%;padding:13px;margin-top:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#e9bd58,#f4d98e);color:#20202a;font-size:16px;font-weight:850;cursor:pointer}.secondary{background:#35445d;color:#fff}.action:disabled{opacity:.5;cursor:not-allowed}.result{margin-top:13px;padding:12px;border-radius:11px;text-align:center;background:#111a29;min-height:48px}.good{color:#70e6a0}.bad{color:#ff3b3b}
 .market{text-align:center}.price{font-size:36px;font-weight:850;color:#ffe082;margin:10px 0 0}.movement{font-size:15px;font-weight:700;min-height:24px}.coin-icon{font-size:42px}.market-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}.market-stats div{background:#111a29;padding:12px;border-radius:10px}.market-stats small{display:block;color:#9eacc2;font-size:11px}.market-stats strong{font-size:18px}.trade-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}.trade-buttons .action{margin-top:0}
 .chartbox{margin-top:18px;background:#111a29;border-radius:14px;padding:12px;text-align:left}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}.chart-head strong{font-size:14px}.chart-head span{font-size:11px;color:#9eacc2}canvas#chart{width:100%;height:220px;display:block}
 .history{margin-top:14px;font-size:13px;color:#c4cede}.history-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #35435a}.foot{text-align:center;color:#8f9db2;font-size:11px;margin:18px 0}
@@ -78,7 +78,6 @@ $('spin').addEventListener('click',()=>{
   const win=color===selected;
   const payout=win?bet*(color==='Verde'?25:2):0;
   
-  // Corrección para alinear exactamente el sector elegido con el puntero superior
   const degPerSlice = 360 / 25;
   const targetAngle = 360 - (index * degPerSlice + degPerSlice / 2);
   rotation += 360 * 6 + (targetAngle - (rotation % 360));
@@ -95,7 +94,14 @@ $('spin').addEventListener('click',()=>{
 });
 
 function drawChart(){
- const c=$('chart'),g=c.getContext('2d'),w=c.width,h=c.height,pad={l:55,r:15,t:15,b:28};
+ const c=$('chart');
+ // Ajustar tamaño interno del canvas al contenedor real para evitar distorsiones o estiramientos
+ if(c.clientWidth && (c.width !== c.clientWidth || c.height !== c.clientHeight)){
+   c.width = c.clientWidth;
+   c.height = c.clientHeight;
+ }
+ 
+ const g=c.getContext('2d'),w=c.width,h=c.height,pad={l:55,r:15,t:15,b:28};
  g.clearRect(0,0,w,h);g.fillStyle='#111a29';g.fillRect(0,0,w,h);
  const vals=priceHistory.slice(-80),min=Math.min(...vals)*.94,max=Math.max(...vals)*1.06||1,range=max-min||1;
  g.font='12px system-ui';g.fillStyle='#9eacc2';g.strokeStyle='#344258';g.lineWidth=1;
@@ -105,12 +111,11 @@ function drawChart(){
  const yFor=v=>pad.t+(max-v)/range*(h-pad.t-pad.b);
  g.beginPath();vals.forEach((v,i)=>{const x=pad.l+i*xStep,y=yFor(v);if(i===0)g.moveTo(x,y);else g.lineTo(x,y);});
  
- // Color dinámico: Verde si sube o se mantiene, Rojo si baja
  const isUp = vals.length > 1 ? vals[vals.length - 1] >= vals[vals.length - 2] : true;
- const lineColor = isUp ? '#70e6a0' : '#ff818b';
+ const lineColor = isUp ? '#70e6a0' : '#ff3b3b'; // Rojo más fuerte y brillante
  
  g.strokeStyle = lineColor;
- g.lineWidth = 3;
+ g.lineWidth = 4; // Línea más gruesa
  g.stroke();
  
  const lastX=pad.l+(vals.length-1)*xStep,lastY=yFor(vals[vals.length-1]);
