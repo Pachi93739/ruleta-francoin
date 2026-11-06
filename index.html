@@ -1,142 +1,720 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Banana Casino</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;padding:20px;background:radial-gradient(circle at top,#283653,#101522 68%);color:#f5f7fb;font-family:system-ui,Segoe UI,sans-serif}
-main{max-width:850px;margin:auto}.top{text-align:center;margin-bottom:16px}.top h1{margin:0;font-size:30px}.muted{color:#aebbd0;font-size:13px}
-.wallet{background:#172235;border:1px solid #3a4a63;border-radius:18px;padding:14px;display:flex;justify-content:space-around;gap:12px;flex-wrap:wrap;margin:16px 0}.stat{text-align:center}.stat small{display:block;color:#aebbd0;font-size:11px;letter-spacing:1px}.stat strong{font-size:23px;color:#ffe082}
-.tabs{display:flex;gap:8px;margin:16px 0}.tab{flex:1;padding:13px 8px;border:1px solid #46546c;border-radius:12px;background:#202c40;color:#dce5f3;font-weight:750;cursor:pointer}.tab.active{background:#e9bd58;color:#20202a;border-color:#e9bd58}
-.panel{background:#1b2434;border:1px solid #35435a;border-radius:20px;padding:20px;box-shadow:0 12px 35px #0004}.panel h2{margin:0 0 5px}.panel p{margin:5px 0 14px}.page{display:none}.page.active{display:block}
-.wheel-wrap{position:relative;width:min(78vw,310px);aspect-ratio:1;margin:14px auto}.pointer{position:absolute;z-index:2;top:-7px;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-top:27px solid #f7d36b}canvas.wheel{width:100%;height:100%;border-radius:50%;border:7px solid #e5c36b;box-shadow:0 8px 25px #0008;transition:transform 4s cubic-bezier(.12,.72,.12,1)}.center{position:absolute;inset:42%;border-radius:50%;background:#e5c36b;border:5px solid white;pointer-events:none}
-label{display:block;font-weight:650;margin:12px 0 7px}input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;background:#111a29;color:white;font-size:16px}.colors{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.color{border:2px solid transparent;border-radius:11px;padding:11px 4px;color:white;font-weight:700;cursor:pointer;background:#303b50}.color.active{border-color:#f7d36b}.red{background:#c93642}.black{background:#101216}.green{background:#16834a}
-.action{width:100%;padding:13px;margin-top:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#e9bd58,#f4d98e);color:#20202a;font-size:16px;font-weight:850;cursor:pointer}.secondary{background:#35445d;color:#fff}.action:disabled{opacity:.5;cursor:not-allowed}.result{margin-top:13px;padding:12px;border-radius:11px;text-align:center;background:#111a29;min-height:48px}.good{color:#70e6a0}.bad{color:#ff3b3b}
-.market{text-align:center}.price{font-size:36px;font-weight:850;color:#ffe082;margin:10px 0 0}.movement{font-size:15px;font-weight:700;min-height:24px}.coin-icon{font-size:42px}.market-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}.market-stats div{background:#111a29;padding:12px;border-radius:10px}.market-stats small{display:block;color:#9eacc2;font-size:11px}.market-stats strong{font-size:18px}.trade-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}.trade-buttons .action{margin-top:0}
-.chartbox{margin-top:18px;background:#111a29;border-radius:14px;padding:12px;text-align:left}.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}.chart-head strong{font-size:14px}.chart-head span{font-size:11px;color:#9eacc2}canvas#chart{width:100%;height:220px;display:block}
-.history{margin-top:14px;font-size:13px;color:#c4cede}.history-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #35435a}.foot{text-align:center;color:#8f9db2;font-size:11px;margin:18px 0}
-</style></head>
-<body><main>
-<header class="top"><h1>🍌 Banana Casino</h1><div class="muted">Ruleta y mercado FranCoin · simulador de puntos</div></header>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:radial-gradient(circle at top,#283653,#101522 68%);color:#f5f7fb;font-family:system-ui,Segoe UI,sans-serif}
+main{max-width:850px;margin:auto}
+.top{text-align:center;margin-bottom:16px}
+.top h1{margin:0;font-size:30px}
+.muted{color:#aebbd0;font-size:13px}
+.wallet{background:#172235;border:1px solid #3a4a63;border-radius:18px;padding:14px;display:flex;justify-content:space-around;gap:12px;flex-wrap:wrap;margin:16px 0}
+.stat{text-align:center}
+.stat small{display:block;color:#aebbd0;font-size:11px;letter-spacing:1px}
+.stat strong{font-size:23px;color:#ffe082}
+.tabs{display:flex;gap:8px;margin:16px 0}
+.tab{flex:1;padding:13px 8px;border:1px solid #46546c;border-radius:12px;background:#202c40;color:#dce5f3;font-weight:750;cursor:pointer}
+.tab.active{background:#e9bd58;color:#20202a;border-color:#e9bd58}
+.panel{background:#1b2434;border:1px solid #35435a;border-radius:20px;padding:20px;box-shadow:0 12px 35px #0004}
+.panel h2{margin:0 0 5px}
+.panel p{margin:5px 0 14px}
+.page{display:none}
+.page.active{display:block}
+.wheel-wrap{position:relative;width:min(78vw,310px);aspect-ratio:1;margin:14px auto}
+.pointer{position:absolute;z-index:2;top:-7px;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-top:27px solid #f7d36b}
+canvas.wheel{width:100%;height:100%;border-radius:50%;border:7px solid #e5c36b;box-shadow:0 8px 25px #0008;transition:transform 4s cubic-bezier(.12,.72,.12,1)}
+.center{position:absolute;inset:42%;border-radius:50%;background:#e5c36b;border:5px solid white;pointer-events:none}
+label{display:block;font-weight:650;margin:12px 0 7px}
+input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;background:#111a29;color:white;font-size:16px}
+.colors{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.color{border:2px solid transparent;border-radius:11px;padding:11px 4px;color:white;font-weight:700;cursor:pointer;background:#303b50}
+.color.active{border-color:#f7d36b}
+.red{background:#c93642}
+.black{background:#101216}
+.green{background:#16834a}
+.action{width:100%;padding:13px;margin-top:13px;border:0;border-radius:11px;background:linear-gradient(90deg,#e9bd58,#f4d98e);color:#20202a;font-size:16px;font-weight:850;cursor:pointer}
+.secondary{background:#35445d;color:#fff}
+.action:disabled{opacity:.5;cursor:not-allowed}
+.result{margin-top:13px;padding:12px;border-radius:11px;text-align:center;background:#111a29;min-height:48px}
+.good{color:#70e6a0}
+.bad{color:#ff3b3b}
+
+/* Mejoras */
+.upgrade-box{margin-top:15px;background:#172235;border:1px solid #46546c;border-radius:14px;padding:15px;text-align:center}
+.upgrade-box h3{margin:0 0 10px;color:#ffe082}
+.upgrade-info{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.upgrade-info div{background:#111a29;padding:10px;border-radius:10px}
+.upgrade-info small{display:block;color:#9eacc2;font-size:11px}
+.upgrade-info strong{font-size:18px}
+.upgrade-box .action{margin-top:12px}
+
+.market{text-align:center}
+.price{font-size:36px;font-weight:850;color:#ffe082;margin:10px 0 0}
+.movement{font-size:15px;font-weight:700;min-height:24px}
+.coin-icon{font-size:42px}
+.market-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}
+.market-stats div{background:#111a29;padding:12px;border-radius:10px}
+.market-stats small{display:block;color:#9eacc2;font-size:11px}
+.market-stats strong{font-size:18px}
+.trade-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.trade-buttons .action{margin-top:0}
+.chartbox{margin-top:18px;background:#111a29;border-radius:14px;padding:12px;text-align:left}
+.chart-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px}
+.chart-head strong{font-size:14px}
+.chart-head span{font-size:11px;color:#9eacc2}
+canvas#chart{width:100%;height:220px;display:block}
+.history{margin-top:14px;font-size:13px;color:#c4cede}
+.history-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #35435a}
+.foot{text-align:center;color:#8f9db2;font-size:11px;margin:18px 0}
+</style>
+</head>
+
+<body>
+<main>
+
+<header class="top">
+<h1>🍌 Banana Casino</h1>
+<div class="muted">Ruleta y mercado FranCoin · simulador de puntos</div>
+</header>
+
 <section class="wallet">
- <div class="stat"><small>TUS BANANAS</small><strong id="bananas">🍌 100.00</strong></div>
- <div class="stat"><small>FRANCOINS</small><strong id="holdings">🪙 0.000</strong></div>
- <div class="stat"><small>VALOR DE CARTERA</small><strong id="portfolio">🍌 0.00</strong></div>
+<div class="stat">
+<small>TUS BANANAS</small>
+<strong id="bananas">🍌 100.00</strong>
+</div>
+<div class="stat">
+<small>FRANCOINS</small>
+<strong id="holdings">🪙 0.000</strong>
+</div>
+<div class="stat">
+<small>VALOR DE CARTERA</small>
+<strong id="portfolio">🍌 0.00</strong>
+</div>
 </section>
+
 <nav class="tabs">
- <button class="tab active" id="tabRoulette" onclick="showPage('roulette')">🎡 Ruleta</button>
- <button class="tab" id="tabMarket" onclick="showPage('market')">🪙 FranCoin</button>
+<button class="tab active" id="tabRoulette" onclick="showPage('roulette')">🎡 Ruleta</button>
+<button class="tab" id="tabMarket" onclick="showPage('market')">🪙 FranCoin</button>
 </nav>
+
+<!-- RULETA -->
 <section class="panel page active" id="roulette">
- <h2>🎡 Ruleta</h2><p class="muted">12 rojas, 12 negras y 1 verde.</p>
- <div class="wheel-wrap"><div class="pointer"></div><canvas class="wheel" id="wheel" width="600" height="600"></canvas><div class="center"></div></div>
- <label for="bet">Apuesta en bananas</label><input id="bet" type="number" min="1" step="1" value="10">
- <label>Elegí un color</label><div class="colors">
- <button class="color red active" data-color="Rojo">🔴 Rojo<br>x2</button><button class="color black" data-color="Negro">⚫ Negro<br>x2</button><button class="color green" data-color="Verde">🟢 Verde<br>x25</button></div>
- <button class="action" id="spin">GIRAR RULETA</button><div class="result" id="rouletteResult">Elegí tu color y girá.</div>
+
+<h2>🎡 Ruleta</h2>
+<p class="muted">12 rojas, 12 negras y 1 verde.</p>
+
+<div class="wheel-wrap">
+<div class="pointer"></div>
+<canvas class="wheel" id="wheel" width="600" height="600"></canvas>
+<div class="center"></div>
+</div>
+
+<label for="bet">Apuesta en bananas</label>
+<input id="bet" type="number" min="1" step="1" value="10">
+
+<label>Elegí un color</label>
+
+<div class="colors">
+<button class="color red active" data-color="Rojo">
+🔴 Rojo<br><span id="redMultiplier">x2</span>
+</button>
+
+<button class="color black" data-color="Negro">
+⚫ Negro<br><span id="blackMultiplier">x2</span>
+</button>
+
+<button class="color green" data-color="Verde">
+🟢 Verde<br><span id="greenMultiplier">x30</span>
+</button>
+</div>
+
+<!-- MEJORAS -->
+<div class="upgrade-box">
+<h3>⚡ Mejoras de ruleta</h3>
+
+<div class="upgrade-info">
+<div>
+<small>NIVEL DE MEJORA</small>
+<strong id="upgradeLevel">0</strong>
+</div>
+
+<div>
+<small>PRECIO SIGUIENTE MEJORA</small>
+<strong id="upgradeCost">🍌 100.00</strong>
+</div>
+</div>
+
+<p class="muted">
+Cada mejora aumenta todos los multiplicadores un 5%.
+</p>
+
+<button class="action" id="upgradeBtn">
+⚡ MEJORAR MULTIPLICADOR
+</button>
+</div>
+
+<button class="action" id="spin">GIRAR RULETA</button>
+
+<div class="result" id="rouletteResult">
+Elegí tu color y girá.
+</div>
+
 </section>
+
+<!-- MERCADO -->
 <section class="panel page market" id="market">
- <h2>🪙 Mercado FranCoin</h2><p class="muted">El precio cambia cada 3 segundos.</p>
- <div class="coin-icon">🪙</div><div class="price" id="price">🍌 10.00</div><div class="movement" id="movement">Esperando primer movimiento…</div>
- <div class="market-stats">
-  <div><small>TUS FRANCOINS</small><strong id="coinCount">0.000</strong></div><div><small>VALOR DE TUS MONEDAS</small><strong id="coinValue">🍌 0.00</strong></div><div><small>PRÓXIMO MOVIMIENTO</small><strong id="nextMove">3 s</strong></div><div><small>CAMBIOS REGISTRADOS</small><strong id="moveCount">0</strong></div>
- </div>
- <label for="tradeAmount">Cantidad de bananas para comprar</label><input id="tradeAmount" type="number" min="0.01" step="0.01" value="10">
- <div class="trade-buttons"><button class="action" id="buy">COMPRAR</button><button class="action secondary" id="sell">VENDER TODO</button></div>
- <div class="result" id="marketResult">Comprá FranCoins usando tus bananas.</div>
- <div class="chartbox"><div class="chart-head"><strong>📈 Historial del precio</strong><span id="chartRange">Desde el inicio</span></div><canvas id="chart" width="700" height="260"></canvas></div>
- <div class="history"><strong>Últimos movimientos</strong><div id="marketHistory">Todavía no hubo movimientos.</div></div>
+
+<h2>🪙 Mercado FranCoin</h2>
+<p class="muted">El precio cambia cada 3 segundos.</p>
+
+<div class="coin-icon">🪙</div>
+<div class="price" id="price">🍌 10.00</div>
+<div class="movement" id="movement">Esperando primer movimiento…</div>
+
+<div class="market-stats">
+
+<div>
+<small>TUS FRANCOINS</small>
+<strong id="coinCount">0.000</strong>
+</div>
+
+<div>
+<small>VALOR DE TUS MONEDAS</small>
+<strong id="coinValue">🍌 0.00</strong>
+</div>
+
+<div>
+<small>PRÓXIMO MOVIMIENTO</small>
+<strong id="nextMove">3 s</strong>
+</div>
+
+<div>
+<small>CAMBIOS REGISTRADOS</small>
+<strong id="moveCount">0</strong>
+</div>
+
+</div>
+
+<label for="tradeAmount">Cantidad de bananas para comprar</label>
+<input id="tradeAmount" type="number" min="0.01" step="0.01" value="10">
+
+<div class="trade-buttons">
+<button class="action" id="buy">COMPRAR</button>
+<button class="action secondary" id="sell">VENDER TODO</button>
+</div>
+
+<div class="result" id="marketResult">
+Comprá FranCoins usando tus bananas.
+</div>
+
+<div class="chartbox">
+<div class="chart-head">
+<strong>📈 Historial del precio</strong>
+<span id="chartRange">Desde el inicio</span>
+</div>
+<canvas id="chart" width="700" height="260"></canvas>
+</div>
+
+<div class="history">
+<strong>Últimos movimientos</strong>
+<div id="marketHistory">Todavía no hubo movimientos.</div>
+</div>
+
 </section>
-<p class="foot">Todo usa bananas ficticias. Las etapas del mercado son secretas: no se muestran avisos ni cuenta regresiva cuando cambian.</p>
+
+<p class="foot">
+Todo usa bananas ficticias. Las etapas del mercado son secretas: no se muestran avisos ni cuenta regresiva cuando cambian.
+</p>
+
 </main>
+
 <script>
 const $=id=>document.getElementById(id);
-function showPage(which){$('roulette').classList.toggle('active',which==='roulette');$('market').classList.toggle('active',which==='market');$('tabRoulette').classList.toggle('active',which==='roulette');$('tabMarket').classList.toggle('active',which==='market');if(which==='market')drawChart();}
-let bananas=100,franCoins=0,price=10,selected='Rojo',rotation=0,spinning=false;
-let phase=0,phaseSeconds=15,moveSeconds=3,marketHistory=[],priceHistory=[10];
-function updateWallet(){
- $('bananas').textContent='🍌 '+bananas.toFixed(2);$('holdings').textContent='🪙 '+franCoins.toFixed(3);
- $('portfolio').textContent='🍌 '+(franCoins*price).toFixed(2);$('coinCount').textContent=franCoins.toFixed(3);
- $('coinValue').textContent='🍌 '+(franCoins*price).toFixed(2);$('price').textContent='🍌 '+price.toFixed(2);
-}
-const wheel=$('wheel'),ctx=wheel.getContext('2d'),slices=Array.from({length:25},(_,i)=>i===24?'Verde':i%2===0?'Rojo':'Negro');
-function drawWheel(){const cx=300,cy=300,r=285,step=2*Math.PI/25;slices.forEach((c,i)=>{const a=-Math.PI/2+i*step,b=a+step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,b);ctx.closePath();ctx.fillStyle=c==='Rojo'?'#cf3441':c==='Negro'?'#17191e':'#16834a';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();});ctx.beginPath();ctx.arc(cx,cy,37,0,Math.PI*2);ctx.fillStyle='#e5c36b';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.stroke();}drawWheel();
-document.querySelectorAll('.color').forEach(btn=>btn.addEventListener('click',()=>{if(spinning)return;selected=btn.dataset.color;document.querySelectorAll('.color').forEach(b=>b.classList.toggle('active',b===btn));}));
 
-$('spin').addEventListener('click',()=>{
+function showPage(which){
+ $('roulette').classList.toggle('active',which==='roulette');
+ $('market').classList.toggle('active',which==='market');
+ $('tabRoulette').classList.toggle('active',which==='roulette');
+ $('tabMarket').classList.toggle('active',which==='market');
+
+ if(which==='market')drawChart();
+}
+
+let bananas=100;
+let franCoins=0;
+let price=10;
+let selected='Rojo';
+let rotation=0;
+let spinning=false;
+
+// SISTEMA DE MEJORAS
+let upgrades=0;
+let multiplierLevel=1;
+
+function upgradeCost(){
+ return 100*Math.pow(1.05,upgrades);
+}
+
+function updateUpgrade(){
+
+ $('upgradeLevel').textContent=upgrades;
+
+ $('upgradeCost').textContent=
+ '🍌 '+upgradeCost().toFixed(2);
+
+ $('redMultiplier').textContent=
+ 'x'+(2*multiplierLevel).toFixed(3).replace(/\.?0+$/,'');
+
+ $('blackMultiplier').textContent=
+ 'x'+(2*multiplierLevel).toFixed(3).replace(/\.?0+$/,'');
+
+ $('greenMultiplier').textContent=
+ 'x'+(30*multiplierLevel).toFixed(3).replace(/\.?0+$/,'');
+
+ $('upgradeBtn').disabled=
+ bananas<upgradeCost() || spinning;
+}
+
+let phase=0;
+let phaseSeconds=15;
+let moveSeconds=3;
+let marketHistory=[];
+let priceHistory=[10];
+
+function updateWallet(){
+
+ $('bananas').textContent='🍌 '+bananas.toFixed(2);
+
+ $('holdings').textContent='🪙 '+franCoins.toFixed(3);
+
+ $('portfolio').textContent=
+ '🍌 '+(franCoins*price).toFixed(2);
+
+ $('coinCount').textContent=franCoins.toFixed(3);
+
+ $('coinValue').textContent=
+ '🍌 '+(franCoins*price).toFixed(2);
+
+ $('price').textContent='🍌 '+price.toFixed(2);
+
+ updateUpgrade();
+}
+
+// DIBUJAR RULETA
+
+const wheel=$('wheel');
+const ctx=wheel.getContext('2d');
+
+const slices=Array.from(
+ {length:25},
+ (_,i)=>i===24?'Verde':i%2===0?'Rojo':'Negro'
+);
+
+function drawWheel(){
+
+ const cx=300;
+ const cy=300;
+ const r=285;
+ const step=2*Math.PI/25;
+
+ slices.forEach((c,i)=>{
+
+  const a=-Math.PI/2+i*step;
+  const b=a+step;
+
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r,a,b);
+  ctx.closePath();
+
+  ctx.fillStyle=
+   c==='Rojo'?'#cf3441':
+   c==='Negro'?'#17191e':
+   '#16834a';
+
+  ctx.fill();
+
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+ });
+
+ ctx.beginPath();
+ ctx.arc(cx,cy,37,0,Math.PI*2);
+ ctx.fillStyle='#e5c36b';
+ ctx.fill();
+ ctx.strokeStyle='#fff';
+ ctx.lineWidth=5;
+ ctx.stroke();
+
+}
+
+drawWheel();
+
+// SELECCIÓN DE COLOR
+
+document.querySelectorAll('.color').forEach(btn=>{
+
+ btn.addEventListener('click',()=>{
+
   if(spinning)return;
-  const bet=Number($('bet').value);
-  if(!Number.isInteger(bet)||bet<1||bet>bananas){
-    $('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus bananas.';
-    return;
-  }
-  spinning=true;
-  $('spin').disabled=true;
-  
-  const index=Math.floor(Math.random()*25);
-  const color=slices[index];
-  const win=color===selected;
-  const payout=win?bet*(color==='Verde'?25:2):0;
-  
-  const degPerSlice = 360 / 25;
-  const targetAngle = 360 - (index * degPerSlice + degPerSlice / 2);
-  rotation += 360 * 6 + (targetAngle - (rotation % 360));
-  
-  wheel.style.transform=`rotate(${rotation}deg)`;
-  
-  setTimeout(()=>{
-    bananas=bananas-bet+payout;
-    updateWallet();
-    $('rouletteResult').innerHTML=win?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`:`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;
-    spinning=false;
-    $('spin').disabled=false;
-  },4100);
+
+  selected=btn.dataset.color;
+
+  document.querySelectorAll('.color').forEach(b=>{
+   b.classList.toggle('active',b===btn);
+  });
+
+ });
+
 });
 
-function drawChart(){
- const c=$('chart');
- // Ajustar tamaño interno del canvas al contenedor real para evitar distorsiones o estiramientos
- if(c.clientWidth && (c.width !== c.clientWidth || c.height !== c.clientHeight)){
-   c.width = c.clientWidth;
-   c.height = c.clientHeight;
+// MEJORAR MULTIPLICADORES
+
+$('upgradeBtn').addEventListener('click',()=>{
+
+ if(spinning)return;
+
+ const cost=upgradeCost();
+
+ if(bananas<cost)return;
+
+ bananas-=cost;
+ upgrades++;
+
+ multiplierLevel*=1.05;
+
+ updateWallet();
+
+ $('rouletteResult').innerHTML=
+ '<strong class="good">⚡ ¡MEJORA COMPRADA! Todos los multiplicadores aumentaron un 5%.</strong>';
+
+});
+
+// GIRAR RULETA
+
+$('spin').addEventListener('click',()=>{
+
+ if(spinning)return;
+
+ const bet=Number($('bet').value);
+
+ if(!Number.isInteger(bet)||bet<1||bet>bananas){
+
+  $('rouletteResult').textContent=
+  'Ingresá una apuesta entera válida que no supere tus bananas.';
+
+  return;
  }
- 
- const g=c.getContext('2d'),w=c.width,h=c.height,pad={l:55,r:15,t:15,b:28};
- g.clearRect(0,0,w,h);g.fillStyle='#111a29';g.fillRect(0,0,w,h);
- const vals=priceHistory.slice(-80),min=Math.min(...vals)*.94,max=Math.max(...vals)*1.06||1,range=max-min||1;
- g.font='12px system-ui';g.fillStyle='#9eacc2';g.strokeStyle='#344258';g.lineWidth=1;
- for(let i=0;i<5;i++){const y=pad.t+(h-pad.t-pad.b)*i/4;g.beginPath();g.moveTo(pad.l,y);g.lineTo(w-pad.r,y);g.stroke();g.fillText((max-(range*i/4)).toFixed(2),5,y+4);}
- if(vals.length<2){g.fillText('El gráfico se irá completando con los movimientos…',pad.l+8,h/2);return;}
+
+ spinning=true;
+
+ $('spin').disabled=true;
+ updateUpgrade();
+
+ const index=Math.floor(Math.random()*25);
+ const color=slices[index];
+
+ const win=color===selected;
+
+ const payout=win
+  ?bet*(color==='Verde'?30:2)*multiplierLevel
+  :0;
+
+ const degPerSlice=360/25;
+
+ const targetAngle=
+  360-(index*degPerSlice+degPerSlice/2);
+
+ rotation+=360*6+(targetAngle-(rotation%360));
+
+ wheel.style.transform=`rotate(${rotation}deg)`;
+
+ setTimeout(()=>{
+
+  bananas=bananas-bet+payout;
+
+  updateWallet();
+
+  $('rouletteResult').innerHTML=win
+   ?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`
+   :`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;
+
+  spinning=false;
+
+  $('spin').disabled=false;
+
+  updateUpgrade();
+
+ },4100);
+
+});
+
+// GRÁFICO
+
+function drawChart(){
+
+ const c=$('chart');
+
+ if(c.clientWidth && (
+  c.width!==c.clientWidth ||
+  c.height!==c.clientHeight
+ )){
+  c.width=c.clientWidth;
+  c.height=c.clientHeight;
+ }
+
+ const g=c.getContext('2d');
+ const w=c.width;
+ const h=c.height;
+
+ const pad={l:55,r:15,t:15,b:28};
+
+ g.clearRect(0,0,w,h);
+ g.fillStyle='#111a29';
+ g.fillRect(0,0,w,h);
+
+ const vals=priceHistory.slice(-80);
+
+ const min=Math.min(...vals)*.94;
+ const max=Math.max(...vals)*1.06||1;
+ const range=max-min||1;
+
+ g.font='12px system-ui';
+ g.fillStyle='#9eacc2';
+ g.strokeStyle='#344258';
+ g.lineWidth=1;
+
+ for(let i=0;i<5;i++){
+
+  const y=pad.t+(h-pad.t-pad.b)*i/4;
+
+  g.beginPath();
+  g.moveTo(pad.l,y);
+  g.lineTo(w-pad.r,y);
+  g.stroke();
+
+  g.fillText(
+   (max-(range*i/4)).toFixed(2),
+   5,y+4
+  );
+
+ }
+
+ if(vals.length<2){
+
+  g.fillText(
+   'El gráfico se irá completando con los movimientos…',
+   pad.l+8,h/2
+  );
+
+  return;
+ }
+
  const xStep=(w-pad.l-pad.r)/(vals.length-1);
- const yFor=v=>pad.t+(max-v)/range*(h-pad.t-pad.b);
- g.beginPath();vals.forEach((v,i)=>{const x=pad.l+i*xStep,y=yFor(v);if(i===0)g.moveTo(x,y);else g.lineTo(x,y);});
- 
- const isUp = vals.length > 1 ? vals[vals.length - 1] >= vals[vals.length - 2] : true;
- const lineColor = isUp ? '#70e6a0' : '#ff3b3b'; // Rojo más fuerte y brillante
- 
- g.strokeStyle = lineColor;
- g.lineWidth = 4; // Línea más gruesa
+
+ const yFor=v=>
+  pad.t+(max-v)/range*(h-pad.t-pad.b);
+
+ g.beginPath();
+
+ vals.forEach((v,i)=>{
+
+  const x=pad.l+i*xStep;
+  const y=yFor(v);
+
+  if(i===0)g.moveTo(x,y);
+  else g.lineTo(x,y);
+
+ });
+
+ const isUp=
+  vals[vals.length-1]>=vals[vals.length-2];
+
+ const lineColor=isUp?'#70e6a0':'#ff3b3b';
+
+ g.strokeStyle=lineColor;
+ g.lineWidth=4;
  g.stroke();
- 
- const lastX=pad.l+(vals.length-1)*xStep,lastY=yFor(vals[vals.length-1]);
+
+ const lastX=pad.l+(vals.length-1)*xStep;
+ const lastY=yFor(vals[vals.length-1]);
+
  g.beginPath();
  g.arc(lastX,lastY,5,0,Math.PI*2);
- g.fillStyle = lineColor;
+ g.fillStyle=lineColor;
  g.fill();
- 
- g.fillStyle='#9eacc2';g.fillText('Anterior',pad.l,h-7);g.textAlign='right';g.fillText('Actual',w-pad.r,h-7);g.textAlign='left';
+
+ g.fillStyle='#9eacc2';
+ g.fillText('Anterior',pad.l,h-7);
+
+ g.textAlign='right';
+ g.fillText('Actual',w-pad.r,h-7);
+ g.textAlign='left';
+
 }
 
-function updateHistory(){$('marketHistory').innerHTML=marketHistory.length?marketHistory.map(m=>`<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>🍌 ${m.price.toFixed(2)}</strong></div>`).join(''):'Todavía no hubo movimientos.';$('moveCount').textContent=marketHistory.length;}
-function marketTick(){
- const chanceUp=phase===0?.60:phase===1?.40:.50,up=Math.random()<chanceUp;
- price=Math.max(.01,price*(up?1.10:.90));const change=up?'+10%':'−10%';
- $('movement').innerHTML=`<span class="${up?'good':'bad'}">${up?'📈 Subió':'📉 Bajó'} ${change}</span>`;
- marketHistory.unshift({up,change,price});marketHistory=marketHistory.slice(0,8);priceHistory.push(price);if(priceHistory.length>300)priceHistory.shift();
- updateHistory();updateWallet();drawChart();
+// HISTORIAL
+
+function updateHistory(){
+
+ $('marketHistory').innerHTML=
+ marketHistory.length
+ ?marketHistory.map(m=>
+  `<div class="history-row">
+   <span>${m.up?'📈':'📉'} ${m.change}</span>
+   <strong>🍌 ${m.price.toFixed(2)}</strong>
+  </div>`
+ ).join('')
+ :'Todavía no hubo movimientos.';
+
+ $('moveCount').textContent=marketHistory.length;
+
 }
-$('buy').addEventListener('click',()=>{const amount=Number($('tradeAmount').value);if(!Number.isFinite(amount)||amount<=0){$('marketResult').textContent='Ingresá una cantidad válida.';return;}if(amount>bananas){$('marketResult').textContent='No tenés suficientes bananas.';return;}const bought=amount/price;bananas-=amount;franCoins+=bought;updateWallet();$('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.</span>`;});
-$('sell').addEventListener('click',()=>{if(franCoins<=0){$('marketResult').textContent='No tenés FranCoins para vender.';return;}const received=franCoins*price,sold=franCoins;bananas+=received;franCoins=0;updateWallet();$('marketResult').innerHTML=`<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste 🍌 ${received.toFixed(2)}.</span>`;});
-setInterval(()=>{moveSeconds--;if(moveSeconds<=0){marketTick();moveSeconds=3;}$('nextMove').textContent=moveSeconds+' s';phaseSeconds--;if(phaseSeconds<=0){phase=Math.floor(Math.random()*3);phaseSeconds=15;}},1000);
-updateWallet();drawChart();
-</script></body></html>
+
+// MOVIMIENTO DEL MERCADO
+
+function marketTick(){
+
+ const chanceUp=
+  phase===0?.60:
+  phase===1?.40:
+  .50;
+
+ const up=Math.random()<chanceUp;
+
+ price=Math.max(
+  .01,
+  price*(up?1.10:.90)
+ );
+
+ const change=up?'+10%':'−10%';
+
+ $('movement').innerHTML=
+ `<span class="${up?'good':'bad'}">
+ ${up?'📈 Subió':'📉 Bajó'} ${change}
+ </span>`;
+
+ marketHistory.unshift({
+  up,
+  change,
+  price
+ });
+
+ marketHistory=marketHistory.slice(0,8);
+
+ priceHistory.push(price);
+
+ if(priceHistory.length>300){
+  priceHistory.shift();
+ }
+
+ updateHistory();
+ updateWallet();
+ drawChart();
+
+}
+
+// COMPRAR FRANCOINS
+
+$('buy').addEventListener('click',()=>{
+
+ const amount=Number($('tradeAmount').value);
+
+ if(!Number.isFinite(amount)||amount<=0){
+
+  $('marketResult').textContent=
+  'Ingresá una cantidad válida.';
+
+  return;
+ }
+
+ if(amount>bananas){
+
+  $('marketResult').textContent=
+  'No tenés suficientes bananas.';
+
+  return;
+ }
+
+ const bought=amount/price;
+
+ bananas-=amount;
+ franCoins+=bought;
+
+ updateWallet();
+
+ $('marketResult').innerHTML=
+ `<span class="good">
+ Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.
+ </span>`;
+
+});
+
+// VENDER FRANCOINS
+
+$('sell').addEventListener('click',()=>{
+
+ if(franCoins<=0){
+
+  $('marketResult').textContent=
+  'No tenés FranCoins para vender.';
+
+  return;
+ }
+
+ const received=franCoins*price;
+ const sold=franCoins;
+
+ bananas+=received;
+ franCoins=0;
+
+ updateWallet();
+
+ $('marketResult').innerHTML=
+ `<span class="good">
+ Vendiste ${sold.toFixed(3)} FranCoins y recibiste 🍌 ${received.toFixed(2)}.
+ </span>`;
+
+});
+
+// TEMPORIZADOR DEL MERCADO
+
+setInterval(()=>{
+
+ moveSeconds--;
+
+ if(moveSeconds<=0){
+
+  marketTick();
+  moveSeconds=3;
+
+ }
+
+ $('nextMove').textContent=moveSeconds+' s';
+
+ phaseSeconds--;
+
+ if(phaseSeconds<=0){
+
+  phase=Math.floor(Math.random()*3);
+  phaseSeconds=15;
+
+ }
+
+},1000);
+
+// INICIO
+
+updateWallet();
+drawChart();
+
+</script>
+</body>
+</html>
