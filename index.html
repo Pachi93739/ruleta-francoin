@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Banana Casino</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:20px;background:radial-gradient(circle at top,#283653,#101522 68%);color:#f5f7fb;font-family:system-ui,Segoe UI,sans-serif}
@@ -43,16 +42,12 @@ input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;backgr
 .result{margin-top:13px;padding:12px;border-radius:11px;text-align:center;background:#111a29;min-height:48px}
 .good{color:#70e6a0}
 .bad{color:#ff3b3b}
-
-/* MEJORAS */
 .upgrade-box{margin-top:15px;background:#172235;border:1px solid #46546c;border-radius:14px;padding:15px;text-align:center}
 .upgrade-box h3{margin:0 0 10px;color:#ffe082}
 .upgrade-info{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .upgrade-info div{background:#111a29;padding:10px;border-radius:10px}
 .upgrade-info small{display:block;color:#9eacc2;font-size:11px}
 .upgrade-info strong{font-size:18px}
-
-/* ETAPAS */
 .stage-box{margin-top:17px;padding:15px;background:#172235;border:1px solid #46546c;border-radius:14px}
 .stage-box h3{margin:0 0 8px;color:#ffe082;text-align:center}
 .stage-price{text-align:center;margin:12px 0;font-size:18px;font-weight:800;color:#ffe082}
@@ -64,8 +59,6 @@ input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;backgr
 .stage-bad{background:#8e2935;border-color:#c93642}
 .stage-neutral{background:#35445d;border-color:#60718c}
 .stage-btn small{display:block;font-size:10px;font-weight:500;margin-top:5px}
-
-/* MERCADO */
 .market{text-align:center}
 .price{font-size:36px;font-weight:850;color:#ffe082;margin:10px 0 0}
 .movement{font-size:15px;font-weight:700;min-height:24px}
@@ -83,8 +76,6 @@ input{width:100%;padding:11px;border-radius:10px;border:1px solid #46546c;backgr
 canvas#chart{width:100%;height:220px;display:block}
 .history{margin-top:14px;font-size:13px;color:#c4cede}
 .history-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #35435a}
-
-/* BLACKJACK */
 .blackjack-table{background:#125638;border:5px solid #b58b46;border-radius:18px;padding:18px;margin-top:15px;text-align:center}
 .cards{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;min-height:90px;margin:12px 0}
 .playing-card{background:#fff;color:#171717;border-radius:9px;width:58px;height:82px;display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:850;box-shadow:0 3px 8px #0005}
@@ -93,7 +84,6 @@ canvas#chart{width:100%;height:220px;display:block}
 .bj-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .bj-controls .action{margin-top:8px}
 .foot{text-align:center;color:#8f9db2;font-size:11px;margin:18px 0}
-
 @media(max-width:400px){
 .stage-buttons{gap:5px}
 .stage-btn{font-size:11px;padding:11px 3px}
@@ -102,28 +92,17 @@ canvas#chart{width:100%;height:220px;display:block}
 }
 </style>
 </head>
-
 <body>
 <main>
-
 <header class="top">
 <h1>🍌 Banana Casino</h1>
 <div class="muted">Ruleta, Blackjack y mercado FranCoin · simulador de puntos</div>
 </header>
 
 <section class="wallet">
-<div class="stat">
-<small>TUS BANANAS</small>
-<strong id="bananas">🍌 100.00</strong>
-</div>
-<div class="stat">
-<small>FRANCOINS</small>
-<strong id="holdings">🪙 0.000</strong>
-</div>
-<div class="stat">
-<small>VALOR DE CARTERA</small>
-<strong id="portfolio">🍌 0.00</strong>
-</div>
+<div class="stat"><small>TUS BANANAS</small><strong id="bananas">🍌 100.00</strong></div>
+<div class="stat"><small>FRANCOINS</small><strong id="holdings">🪙 0.000</strong></div>
+<div class="stat"><small>VALOR DE CARTERA</small><strong id="portfolio">🍌 0.00</strong></div>
 </section>
 
 <nav class="tabs">
@@ -132,1101 +111,421 @@ canvas#chart{width:100%;height:220px;display:block}
 <button class="tab" id="tabMarket" onclick="showPage('market')">🪙 FranCoin</button>
 </nav>
 
-<!-- RULETA -->
-
 <section class="panel page active" id="roulette">
-
 <h2>🎡 Ruleta</h2>
 <p class="muted">12 rojas, 12 negras y 1 verde.</p>
-
 <div class="wheel-wrap">
 <div class="pointer"></div>
 <canvas class="wheel" id="wheel" width="600" height="600"></canvas>
 <div class="center"></div>
 </div>
-
 <label for="bet">Apuesta en bananas</label>
 <input id="bet" type="number" min="1" step="1" value="10">
-
 <label>Elegí un color</label>
-
 <div class="colors">
-<button class="color red active" data-color="Rojo">
-🔴 Rojo<br><span id="redMultiplier">x2</span>
-</button>
-<button class="color black" data-color="Negro">
-⚫ Negro<br><span id="blackMultiplier">x2</span>
-</button>
-<button class="color green" data-color="Verde">
-🟢 Verde<br><span id="greenMultiplier">x30</span>
-</button>
+<button class="color red active" data-color="Rojo">🔴 Rojo<br><span id="redMultiplier">x2</span></button>
+<button class="color black" data-color="Negro">⚫ Negro<br><span id="blackMultiplier">x2</span></button>
+<button class="color green" data-color="Verde">🟢 Verde<br><span id="greenMultiplier">x30</span></button>
 </div>
-
 <div class="upgrade-box">
 <h3>⚡ Mejoras de ruleta</h3>
 <div class="upgrade-info">
-<div>
-<small>NIVEL DE MEJORA</small>
-<strong id="upgradeLevel">0</strong>
+<div><small>NIVEL DE MEJORA</small><strong id="upgradeLevel">0</strong></div>
+<div><small>PRÓXIMA MEJORA</small><strong id="upgradeCost">🍌 100.00</strong></div>
 </div>
-<div>
-<small>PRÓXIMA MEJORA</small>
-<strong id="upgradeCost">🍌 100.00</strong>
-</div>
-</div>
-
 <p class="muted">Cada mejora suma una cantidad fija. El aumento crece un 50% cada 10 mejoras.</p>
 <p class="muted" id="nextUpgradeIncrease">Próximo aumento: +0.05</p>
 <button class="action" id="upgradeBtn">⚡ MEJORAR MULTIPLICADOR</button>
 </div>
-
 <button class="action" id="spin">GIRAR RULETA</button>
 <button class="action secondary" id="autoSpin">▶ ACTIVAR AUTO SPIN</button>
-
 <div class="result" id="rouletteResult">Elegí tu color y girá.</div>
 </section>
 
-<!-- BLACKJACK -->
-
 <section class="panel page" id="blackjack">
-
 <h2>🃏 Blackjack</h2>
 <p class="muted">Acercate a 21 sin pasarte. El dealer se planta en 17.</p>
-
 <label for="bjBet">Apuesta en bananas</label>
 <input id="bjBet" type="number" min="1" step="1" value="10">
-
 <button class="action" id="bjStart">REPARTIR CARTAS</button>
-
 <div class="blackjack-table">
 <h3>Dealer</h3>
 <div class="cards" id="dealerCards"></div>
 <div id="dealerScore">Puntos: -</div>
-
 <hr>
-
 <h3>Vos</h3>
 <div class="cards" id="playerCards"></div>
 <div id="playerScore">Puntos: -</div>
-
 <div class="result" id="bjResult">Hacé tu apuesta para empezar.</div>
 </div>
-
 <div id="bjDecision" class="bj-controls" style="display:none">
 <button class="action" id="bjDouble">💰 DUPLICAR APUESTA</button>
 <button class="action secondary" id="bjKeep">SEGUIR CON LA INICIAL</button>
 </div>
-
 <div id="bjPlay" class="bj-controls" style="display:none">
 <button class="action" id="bjHit">🃏 PEDIR CARTA</button>
 <button class="action secondary" id="bjStand">✋ PLANTARSE</button>
 </div>
-
 </section>
 
-<!-- MERCADO FRANCOIN -->
-
 <section class="panel page market" id="market">
-
 <h2>🪙 Mercado FranCoin</h2>
 <p class="muted">El precio cambia cada 3 segundos.</p>
-
 <div class="coin-icon">🪙</div>
 <div class="price" id="price">🍌 10.00</div>
 <div class="movement" id="movement">Esperando primer movimiento…</div>
-
 <div class="market-stats">
-<div>
-<small>TUS FRANCOINS</small>
-<strong id="coinCount">0.000</strong>
+<div><small>TUS FRANCOINS</small><strong id="coinCount">0.000</strong></div>
+<div><small>VALOR DE TUS MONEDAS</small><strong id="coinValue">🍌 0.00</strong></div>
+<div><small>PRÓXIMO MOVIMIENTO</small><strong id="nextMove">3 s</strong></div>
+<div><small>CAMBIOS REGISTRADOS</small><strong id="moveCount">0</strong></div>
 </div>
-<div>
-<small>VALOR DE TUS MONEDAS</small>
-<strong id="coinValue">🍌 0.00</strong>
-</div>
-<div>
-<small>PRÓXIMO MOVIMIENTO</small>
-<strong id="nextMove">3 s</strong>
-</div>
-<div>
-<small>CAMBIOS REGISTRADOS</small>
-<strong id="moveCount">0</strong>
-</div>
-</div>
-
 <div class="stage-box">
 <h3>🎛️ Control de etapas FranCoin</h3>
-<p class="muted" style="text-align:center">
-Las etapas cambian automáticamente. También podés pagar para elegir una.
-</p>
-
-<div class="stage-price">
-💰 Precio del cambio: <span id="stageCost">🍌 1000.00</span>
-</div>
-
+<p class="muted" style="text-align:center">Las etapas cambian automáticamente. También podés pagar para elegir una.</p>
+<div class="stage-price">💰 Precio del cambio: <span id="stageCost">🍌 1000.00</span></div>
 <div class="stage-status" id="stageStatus">❔ Etapa desconocida</div>
-
 <div class="stage-buttons">
-<button class="stage-btn stage-good" id="goodStage">
-📈 BUENA<small>60% subir</small>
-</button>
-<button class="stage-btn stage-bad" id="badStage">
-📉 MALA<small>60% bajar</small>
-</button>
-<button class="stage-btn stage-neutral" id="neutralStage">
-⚖️ NEUTRA<small>50% / 50%</small>
-</button>
+<button class="stage-btn stage-good" id="goodStage">📈 BUENA<small>60% subir</small></button>
+<button class="stage-btn stage-bad" id="badStage">📉 MALA<small>60% bajar</small></button>
+<button class="stage-btn stage-neutral" id="neutralStage">⚖️ NEUTRA<small>50% / 50%</small></button>
 </div>
-
-<p class="muted" style="text-align:center;margin-top:12px">
-Cada cambio cuesta 100 veces el precio actual de una FranCoin y dura 15 segundos.
-</p>
+<p class="muted" style="text-align:center;margin-top:12px">Cada cambio cuesta 100 veces el precio actual de una FranCoin y dura 15 segundos.</p>
 </div>
-
 <label for="tradeAmount">Cantidad de bananas para comprar</label>
 <input id="tradeAmount" type="number" min="0.01" step="0.01" value="10">
-
 <div class="trade-buttons">
 <button class="action" id="buy">COMPRAR</button>
 <button class="action secondary" id="sell">VENDER TODO</button>
 </div>
-
 <div class="result" id="marketResult">Comprá FranCoins usando tus bananas.</div>
-
 <div class="chartbox">
-<div class="chart-head">
-<strong>📈 Historial del precio</strong>
-<span id="chartRange">Desde el inicio</span>
-</div>
+<div class="chart-head"><strong>📈 Historial del precio</strong><span id="chartRange">Desde el inicio</span></div>
 <canvas id="chart" width="700" height="260"></canvas>
 </div>
-
-<div class="history">
-<strong>Últimos movimientos</strong>
-<div id="marketHistory">Todavía no hubo movimientos.</div>
-</div>
-
+<div class="history"><strong>Últimos movimientos</strong><div id="marketHistory">Todavía no hubo movimientos.</div></div>
 </section>
-
-<p class="foot">
-Todo usa bananas ficticias. Las etapas automáticas cambian cada 15 segundos.
-</p>
-
+<p class="foot">Todo usa bananas ficticias. Las etapas automáticas cambian cada 15 segundos.</p>
 </main>
 
 <script>
-
 const $=id=>document.getElementById(id);
 
 function showPage(which){
  $('roulette').classList.toggle('active',which==='roulette');
  $('blackjack').classList.toggle('active',which==='blackjack');
  $('market').classList.toggle('active',which==='market');
-
  $('tabRoulette').classList.toggle('active',which==='roulette');
  $('tabBlackjack').classList.toggle('active',which==='blackjack');
  $('tabMarket').classList.toggle('active',which==='market');
-
  if(which==='market')drawChart();
 }
 
-// VARIABLES GENERALES
+let bananas=100,franCoins=0,price=10,selected='Rojo',rotation=0,spinning=false;
+let upgrades=0,multiplierLevel=1;
 
-let bananas=100;
-let franCoins=0;
-let price=10;
-let selected='Rojo';
-let rotation=0;
-let spinning=false;
-
-// MEJORAS DE RULETA
-
-let upgrades=0;
-let multiplierLevel=1;
-
-function upgradeCost(){
- return 100*Math.pow(1.05,upgrades);
-}
-
-function nextUpgradeIncrease(){
- const block=Math.floor(upgrades/10);
- return 0.05*Math.pow(1.5,block);
-}
+function upgradeCost(){return 100*Math.pow(1.05,upgrades)}
+function nextUpgradeIncrease(){return .05*Math.pow(1.5,Math.floor(upgrades/10))}
 
 function updateUpgrade(){
-
  $('upgradeLevel').textContent=upgrades;
  $('upgradeCost').textContent='🍌 '+upgradeCost().toFixed(2);
-
- $('nextUpgradeIncrease').textContent=
- 'Próximo aumento: +'+nextUpgradeIncrease().toFixed(5);
-
- const formatMultiplier=n=>Number(n.toFixed(5)).toString();
-
- $('redMultiplier').textContent='x'+formatMultiplier(2*multiplierLevel);
- $('blackMultiplier').textContent='x'+formatMultiplier(2*multiplierLevel);
- $('greenMultiplier').textContent='x'+formatMultiplier(30*multiplierLevel);
-
+ $('nextUpgradeIncrease').textContent='Próximo aumento: +'+nextUpgradeIncrease().toFixed(5);
+ const f=n=>Number(n.toFixed(5)).toString();
+ $('redMultiplier').textContent='x'+f(2*multiplierLevel);
+ $('blackMultiplier').textContent='x'+f(2*multiplierLevel);
+ $('greenMultiplier').textContent='x'+f(30*multiplierLevel);
  $('upgradeBtn').disabled=bananas<upgradeCost()||spinning;
 }
 
-// VARIABLES DEL MERCADO
-
-function randomStage(){
- return Math.floor(Math.random()*3);
-}
-
-let phase=randomStage();
-let manualStage=false;
-let phaseSeconds=15;
-let moveSeconds=3;
-
-let marketHistory=[];
-let priceHistory=[10];
-
-// ACTUALIZAR CARTERA
+function randomStage(){return Math.floor(Math.random()*3)}
+let phase=randomStage(),manualStage=false,phaseSeconds=15,moveSeconds=3;
+let marketHistory=[],priceHistory=[10];
 
 function updateWallet(){
-
  $('bananas').textContent='🍌 '+bananas.toFixed(2);
  $('holdings').textContent='🪙 '+franCoins.toFixed(3);
  $('portfolio').textContent='🍌 '+(franCoins*price).toFixed(2);
-
  $('coinCount').textContent=franCoins.toFixed(3);
  $('coinValue').textContent='🍌 '+(franCoins*price).toFixed(2);
  $('price').textContent='🍌 '+price.toFixed(2);
-
- updateUpgrade();
- updateStageUI();
+ updateUpgrade();updateStageUI();
 }
 
-// ETAPAS
-
-function stageCost(){
- return price*100;
-}
-
+function stageCost(){return price*100}
 function stageName(){
  if(phase===0)return '📈 Etapa buena · 60% subir / 40% bajar';
  if(phase===1)return '📉 Etapa mala · 40% subir / 60% bajar';
  return '⚖️ Etapa neutra · 50% subir / 50% bajar';
 }
-
 function updateStageUI(){
-
  $('stageCost').textContent='🍌 '+stageCost().toFixed(2);
-
- if(manualStage){
-  $('stageStatus').textContent=
-   stageName()+' · '+phaseSeconds+' s restantes';
- }else{
-  $('stageStatus').textContent='❔ Etapa desconocida';
- }
-
+ $('stageStatus').textContent=manualStage?stageName()+' · '+phaseSeconds+' s restantes':'❔ Etapa desconocida';
  $('goodStage').disabled=bananas<stageCost();
  $('badStage').disabled=bananas<stageCost();
  $('neutralStage').disabled=bananas<stageCost();
 }
-
 function changeStage(newPhase){
-
  const cost=stageCost();
-
  if(bananas<cost){
-  $('marketResult').innerHTML=
-  '<span class="bad">No tenés suficientes bananas para cambiar la etapa. Necesitás 🍌 '+cost.toFixed(2)+'.</span>';
-  return;
+  $('marketResult').innerHTML='<span class="bad">No tenés suficientes bananas. Necesitás 🍌 '+cost.toFixed(2)+'.</span>';return;
  }
-
- bananas-=cost;
- phase=newPhase;
- manualStage=true;
- phaseSeconds=15;
-
+ bananas-=cost;phase=newPhase;manualStage=true;phaseSeconds=15;
  updateWallet();
-
- $('marketResult').innerHTML=
- '<span class="good">¡Etapa cambiada! '+stageName()+'. Dura 15 segundos.</span>';
+ $('marketResult').innerHTML='<span class="good">¡Etapa cambiada! '+stageName()+'. Dura 15 segundos.</span>';
 }
-
 $('goodStage').addEventListener('click',()=>changeStage(0));
 $('badStage').addEventListener('click',()=>changeStage(1));
 $('neutralStage').addEventListener('click',()=>changeStage(2));
 
 // RULETA
-
-const wheel=$('wheel');
-const ctx=wheel.getContext('2d');
-
-const slices=Array.from(
- {length:25},
- (_,i)=>i===24?'Verde':i%2===0?'Rojo':'Negro'
-);
+const wheel=$('wheel'),ctx=wheel.getContext('2d');
+const slices=Array.from({length:25},(_,i)=>i===24?'Verde':i%2===0?'Rojo':'Negro');
 
 function drawWheel(){
-
- const cx=300,cy=300,r=285;
- const step=2*Math.PI/25;
-
+ const cx=300,cy=300,r=285,step=2*Math.PI/25;
  slices.forEach((c,i)=>{
-
-  const a=-Math.PI/2+i*step;
-  const b=a+step;
-
-  ctx.beginPath();
-  ctx.moveTo(cx,cy);
-  ctx.arc(cx,cy,r,a,b);
-  ctx.closePath();
-
-  ctx.fillStyle=c==='Rojo'?'#cf3441':
-   c==='Negro'?'#17191e':'#16834a';
-
-  ctx.fill();
-  ctx.strokeStyle='#fff';
-  ctx.lineWidth=3;
-  ctx.stroke();
+  const a=-Math.PI/2+i*step,b=a+step;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,b);ctx.closePath();
+  ctx.fillStyle=c==='Rojo'?'#cf3441':c==='Negro'?'#17191e':'#16834a';
+  ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();
  });
-
- ctx.beginPath();
- ctx.arc(cx,cy,37,0,Math.PI*2);
- ctx.fillStyle='#e5c36b';
- ctx.fill();
- ctx.strokeStyle='#fff';
- ctx.lineWidth=5;
- ctx.stroke();
+ ctx.beginPath();ctx.arc(cx,cy,37,0,Math.PI*2);
+ ctx.fillStyle='#e5c36b';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.stroke();
 }
-
 drawWheel();
 
-// SELECCIÓN DE COLOR
-
 document.querySelectorAll('.color').forEach(btn=>{
-
  btn.addEventListener('click',()=>{
-
   if(spinning)return;
-
   selected=btn.dataset.color;
-
-  document.querySelectorAll('.color').forEach(b=>{
-   b.classList.toggle('active',b===btn);
-  });
+  document.querySelectorAll('.color').forEach(b=>b.classList.toggle('active',b===btn));
  });
 });
 
-// AUTO SPIN
-
 let autoSpinning=false;
-
 function stopAutoSpin(message=''){
- autoSpinning=false;
- $('autoSpin').textContent='▶ ACTIVAR AUTO SPIN';
-
- if(message){
-  $('rouletteResult').innerHTML+=' <br>'+message;
- }
+ autoSpinning=false;$('autoSpin').textContent='▶ ACTIVAR AUTO SPIN';
+ if(message)$('rouletteResult').innerHTML+=' <br>'+message;
 }
-
 function spinRound(){
-
  if(spinning)return;
-
  const bet=Number($('bet').value);
-
  if(!Number.isInteger(bet)||bet<1||bet>bananas){
-  $('rouletteResult').textContent=
-  'Ingresá una apuesta entera válida que no supere tus bananas.';
-
-  stopAutoSpin();
-  $('spin').disabled=false;
-  return;
+  $('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus bananas.';
+  stopAutoSpin();$('spin').disabled=false;return;
  }
-
- spinning=true;
- $('spin').disabled=true;
- $('autoSpin').disabled=false;
- updateUpgrade();
-
- const index=Math.floor(Math.random()*25);
- const color=slices[index];
- const win=color===selected;
-
- const payout=win?
-  bet*(color==='Verde'?30:2)*multiplierLevel:0;
-
- const degPerSlice=360/25;
- const targetAngle=360-(index*degPerSlice+degPerSlice/2);
-
+ spinning=true;$('spin').disabled=true;updateUpgrade();
+ const index=Math.floor(Math.random()*25),color=slices[index],win=color===selected;
+ const payout=win?bet*(color==='Verde'?30:2)*multiplierLevel:0;
+ const degPerSlice=360/25,targetAngle=360-(index*degPerSlice+degPerSlice/2);
  rotation+=360*6+(targetAngle-(rotation%360));
  wheel.style.transform=`rotate(${rotation}deg)`;
 
  setTimeout(()=>{
-
-  bananas=bananas-bet+payout;
-  updateWallet();
-
+  bananas=bananas-bet+payout;updateWallet();
   $('rouletteResult').innerHTML=win
    ?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`
    :`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;
-
-  spinning=false;
-  $('spin').disabled=false;
-  updateUpgrade();
-
+  spinning=false;$('spin').disabled=false;updateUpgrade();
   if(autoSpinning){
-
    if(bananas>=Number($('bet').value)){
-    setTimeout(()=>{
-     if(autoSpinning)spinRound();
-    },400);
-   }else{
-    stopAutoSpin('Auto Spin detenido: no tenés suficientes bananas.');
-   }
+    setTimeout(()=>{if(autoSpinning)spinRound()},400);
+   }else stopAutoSpin('Auto Spin detenido: no tenés suficientes bananas.');
   }
-
  },4100);
 }
-
-$('spin').addEventListener('click',()=>{
- if(!spinning)spinRound();
-});
-
+$('spin').addEventListener('click',()=>{if(!spinning)spinRound()});
 $('autoSpin').addEventListener('click',()=>{
-
- if(autoSpinning){
-  stopAutoSpin();
-  return;
- }
-
+ if(autoSpinning){stopAutoSpin();return}
  if(spinning)return;
-
- autoSpinning=true;
- $('autoSpin').textContent='⏹ DETENER AUTO SPIN';
- spinRound();
+ autoSpinning=true;$('autoSpin').textContent='⏹ DETENER AUTO SPIN';spinRound();
 });
-
-// MEJORAS DE MULTIPLICADORES
 
 $('upgradeBtn').addEventListener('click',()=>{
-
  if(spinning)return;
-
  const cost=upgradeCost();
-
  if(bananas<cost)return;
-
  const increase=nextUpgradeIncrease();
-
- bananas-=cost;
- upgrades++;
- multiplierLevel+=increase;
-
- updateWallet();
-
- $('rouletteResult').innerHTML=
- '<strong class="good">⚡ ¡MEJORA COMPRADA! Se sumó +'+increase.toFixed(5)+' al multiplicador.</strong>';
+ bananas-=cost;upgrades++;multiplierLevel+=increase;updateWallet();
+ $('rouletteResult').innerHTML='<strong class="good">⚡ ¡MEJORA COMPRADA! Se sumó +'+increase.toFixed(5)+' al multiplicador.</strong>';
 });
 
-// BLACKJACK
-
-let bjPlayer=[];
-let bjDealer=[];
-let bjBet=0;
-let bjActive=false;
-
-function drawCard(){
-
- const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
- const suits=['♠','♥','♦','♣'];
-
- return {
-  rank:ranks[Math.floor(Math.random()*ranks.length)],
-  suit:suits[Math.floor(Math.random()*suits.length)]
- };
-}
-
-function handValue(hand){
-
- let total=0;
- let aces=0;
-
- hand.forEach(card=>{
-
-  if(card.rank==='A'){
-   total+=11;
-   aces++;
-  }else if(['K','Q','J'].includes(card.rank)){
-   total+=10;
-  }else{
-   total+=Number(card.rank);
-  }
- });
-
- while(total>21&&aces>0){
-  total-=10;
-  aces--;
- }
-
- return total;
-}
-
-function renderCards(revealDealer=false){
-
- const dealerHidden=bjActive&&!revealDealer;
-
- $('playerCards').innerHTML=bjPlayer.map(card=>
-  `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
-   ${card.rank}${card.suit}
-  </div>`
- ).join('');
-
- $('dealerCards').innerHTML=bjDealer.map((card,index)=>{
-
-  if(dealerHidden&&index===1){
-   return '<div class="playing-card hidden-card">?</div>';
-  }
-
-  return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
-   ${card.rank}${card.suit}
-  </div>`;
- }).join('');
-
- $('playerScore').textContent='Puntos: '+handValue(bjPlayer);
-
- $('dealerScore').textContent=dealerHidden
-  ?'Puntos: '+handValue([bjDealer[0]])+' + ?'
-  :'Puntos: '+handValue(bjDealer);
-}
-
-function finishBlackjack(message,type){
-
- bjActive=false;
-
- $('bjDecision').style.display='none';
- $('bjPlay').style.display='none';
-
- $('bjResult').innerHTML=
- `<strong class="${type}">${message}</strong>`;
-
- renderCards(true);
- updateWallet();
-}
-
-function dealerTurn(){
-
- // Mostrar la carta oculta antes del turno del dealer.
- renderCards(true);
-
- while(handValue(bjDealer)<17){
-  bjDealer.push(drawCard());
- }
-
- renderCards(true);
-
- const playerTotal=handValue(bjPlayer);
- const dealerTotal=handValue(bjDealer);
-
- if(dealerTotal>21){
-  bananas+=bjBet*2;
-  finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good');
- }else if(playerTotal>dealerTotal){
-  bananas+=bjBet*2;
-  finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good');
- }else if(playerTotal===dealerTotal){
-  bananas+=bjBet;
-  finishBlackjack('Empate. Recuperaste tu apuesta.','');
- }else{
-  finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
- }
-}
-
-function startBlackjack(){
-
- if(bjActive)return;
-
- const bet=Number($('bjBet').value);
-
- if(!Number.isInteger(bet)||bet<1||bet>bananas){
-  $('bjResult').textContent='Ingresá una apuesta entera válida.';
-  return;
- }
-
- bananas-=bet;
- bjBet=bet;
-
- bjPlayer=[drawCard(),drawCard()];
- bjDealer=[drawCard(),drawCard()];
-
- bjActive=true;
-
- $('bjDecision').style.display='grid';
- $('bjPlay').style.display='none';
- $('bjResult').textContent='¿Querés duplicar la apuesta o seguir con la inicial?';
-
- renderCards();
- updateWallet();
-
- const playerNatural=handValue(bjPlayer)===21;
- const dealerNatural=handValue(bjDealer)===21;
-
- if(playerNatural||dealerNatural){
-
-  if(playerNatural&&dealerNatural){
-   bananas+=bjBet;
-   finishBlackjack('¡Empate! Ambos tienen Blackjack.','');
-  }else if(playerNatural){
-   bananas+=bjBet*2.5;
-   finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good');
-  }else{
-   finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
-  }
- }
-
-// BLACKJACK
-
-let bjPlayer=[];
-let bjDealer=[];
-let bjBet=0;
-let bjActive=false;
-let bjActionLocked=false;
+// BLACKJACK CORREGIDO
+let bjPlayer=[],bjDealer=[],bjBet=0,bjActive=false,bjBusy=false;
 
 function drawCard(){
  const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
  const suits=['♠','♥','♦','♣'];
- return {
-  rank:ranks[Math.floor(Math.random()*ranks.length)],
-  suit:suits[Math.floor(Math.random()*suits.length)]
- };
+ return {rank:ranks[Math.floor(Math.random()*ranks.length)],suit:suits[Math.floor(Math.random()*suits.length)]};
 }
-
 function handValue(hand){
- let total=0;
- let aces=0;
-
+ let total=0,aces=0;
  hand.forEach(card=>{
-  if(card.rank==='A'){
-   total+=11;
-   aces++;
-  }else if(['K','Q','J'].includes(card.rank)){
-   total+=10;
-  }else{
-   total+=Number(card.rank);
-  }
+  if(card.rank==='A'){total+=11;aces++}
+  else if(['K','Q','J'].includes(card.rank))total+=10;
+  else total+=Number(card.rank);
  });
-
- while(total>21&&aces>0){
-  total-=10;
-  aces--;
- }
-
+ while(total>21&&aces>0){total-=10;aces--}
  return total;
 }
-
 function renderCards(revealDealer=false){
- const dealerHidden=bjActive&&!revealDealer;
-
+ const hidden=bjActive&&!revealDealer;
  $('playerCards').innerHTML=bjPlayer.map(card=>
-  `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
-   ${card.rank}${card.suit}
-  </div>`
+  `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">${card.rank}${card.suit}</div>`
  ).join('');
-
- $('dealerCards').innerHTML=bjDealer.map((card,index)=>{
-  if(dealerHidden&&index===1){
-   return '<div class="playing-card hidden-card">?</div>';
-  }
-
-  return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
-   ${card.rank}${card.suit}
-  </div>`;
+ $('dealerCards').innerHTML=bjDealer.map((card,i)=>{
+  if(hidden&&i===1)return '<div class="playing-card hidden-card">?</div>';
+  return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">${card.rank}${card.suit}</div>`;
  }).join('');
-
  $('playerScore').textContent='Puntos: '+handValue(bjPlayer);
-
- $('dealerScore').textContent=dealerHidden
-  ?'Puntos: '+handValue([bjDealer[0]])+' + ?'
-  :'Puntos: '+handValue(bjDealer);
+ $('dealerScore').textContent=hidden?'Puntos: '+handValue([bjDealer[0]])+' + ?':'Puntos: '+handValue(bjDealer);
 }
-
-function lockBjButtons(locked){
- bjActionLocked=locked;
- $('bjDouble').disabled=locked;
- $('bjKeep').disabled=locked;
- $('bjHit').disabled=locked;
- $('bjStand').disabled=locked;
+function finishBlackjack(message,type=''){
+ bjActive=false;bjBusy=false;
+ $('bjDecision').style.display='none';$('bjPlay').style.display='none';
+ $('bjResult').innerHTML=`<strong class="${type}">${message}</strong>`;
+ renderCards(true);updateWallet();
 }
-
-function finishBlackjack(message,type){
- bjActive=false;
- lockBjButtons(false);
-
- $('bjDecision').style.display='none';
- $('bjPlay').style.display='none';
-
- $('bjResult').innerHTML=
- `<strong class="${type}">${message}</strong>`;
-
- renderCards(true);
- updateWallet();
-}
-
 function dealerTurn(){
- $('bjDecision').style.display='none';
- $('bjPlay').style.display='none';
-
+ $('bjDecision').style.display='none';$('bjPlay').style.display='none';
  renderCards(true);
-
- while(handValue(bjDealer)<17){
-  bjDealer.push(drawCard());
- }
-
+ while(handValue(bjDealer)<17)bjDealer.push(drawCard());
  renderCards(true);
-
- const playerTotal=handValue(bjPlayer);
- const dealerTotal=handValue(bjDealer);
-
- if(dealerTotal>21){
-  bananas+=bjBet*2;
-  finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good');
- }else if(playerTotal>dealerTotal){
-  bananas+=bjBet*2;
-  finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good');
- }else if(playerTotal===dealerTotal){
-  bananas+=bjBet;
-  finishBlackjack('Empate. Recuperaste tu apuesta.','');
- }else{
-  finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
- }
+ const p=handValue(bjPlayer),d=handValue(bjDealer);
+ if(d>21){bananas+=bjBet*2;finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good')}
+ else if(p>d){bananas+=bjBet*2;finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good')}
+ else if(p===d){bananas+=bjBet;finishBlackjack('Empate. Recuperaste tu apuesta.')}
+ else finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
 }
-
 function startBlackjack(){
- if(bjActive||bjActionLocked)return;
-
+ if(bjActive||bjBusy)return;
  const bet=Number($('bjBet').value);
-
  if(!Number.isInteger(bet)||bet<1||bet>bananas){
-  $('bjResult').textContent='Ingresá una apuesta entera válida.';
-  return;
+  $('bjResult').textContent='Ingresá una apuesta entera válida.';return;
  }
-
- bananas-=bet;
- bjBet=bet;
-
+ bjBet=bet;bananas-=bet;
  bjPlayer=[drawCard(),drawCard()];
  bjDealer=[drawCard(),drawCard()];
-
- bjActive=true;
- lockBjButtons(false);
-
- $('bjDecision').style.display='grid';
- $('bjPlay').style.display='none';
+ bjActive=true;bjBusy=false;
+ $('bjDecision').style.display='grid';$('bjPlay').style.display='none';
  $('bjResult').textContent='¿Querés duplicar la apuesta o seguir con la inicial?';
+ renderCards();updateWallet();
 
- renderCards();
- updateWallet();
-
- const playerNatural=handValue(bjPlayer)===21;
- const dealerNatural=handValue(bjDealer)===21;
-
- if(playerNatural||dealerNatural){
-  if(playerNatural&&dealerNatural){
-   bananas+=bjBet;
-   finishBlackjack('¡Empate! Ambos tienen Blackjack.','');
-  }else if(playerNatural){
-   bananas+=bjBet*2.5;
-   finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good');
-  }else{
-   finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
-  }
+ const pn=handValue(bjPlayer)===21,dn=handValue(bjDealer)===21;
+ if(pn||dn){
+  if(pn&&dn){bananas+=bjBet;finishBlackjack('¡Empate! Ambos tienen Blackjack.')}
+  else if(pn){bananas+=bjBet*2.5;finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good')}
+  else finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
  }
 }
-
 function continueInitialBet(){
- if(!bjActive||bjActionLocked)return;
-
- lockBjButtons(true);
-
+ if(!bjActive||bjBusy)return;
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='grid';
-
  $('bjResult').textContent='Podés pedir cartas o plantarte.';
-
- lockBjButtons(false);
 }
-
 function doubleBlackjack(){
- if(!bjActive||bjActionLocked)return;
-
- lockBjButtons(true);
-
+ if(!bjActive||bjBusy)return;
+ bjBusy=true;
  if(bananas<bjBet){
   $('bjResult').textContent='No tenés suficientes bananas para duplicar.';
-  lockBjButtons(false);
-  return;
+  bjBusy=false;return;
  }
-
- // Cobrar la apuesta adicional.
- bananas-=bjBet;
- bjBet*=2;
-
- // Ocultar las opciones antes de repartir la carta.
+ // Desactivar primero las opciones para impedir acciones simultáneas.
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='none';
-
- // Al duplicar, recibís exactamente UNA carta.
+ bananas-=bjBet;bjBet*=2;
+ // Se entrega una sola carta adicional.
  bjPlayer.push(drawCard());
-
- renderCards();
- updateWallet();
-
+ renderCards();updateWallet();
  if(handValue(bjPlayer)>21){
-  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
-  return;
+  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');return;
  }
-
- // Termina tu turno y juega el dealer.
  dealerTurn();
 }
-
 function hitBlackjack(){
- if(!bjActive||bjActionLocked)return;
-
- lockBjButtons(true);
-
- bjPlayer.push(drawCard());
- renderCards();
-
+ if(!bjActive||bjBusy)return;
+ bjBusy=true;
+ bjPlayer.push(drawCard());renderCards();
  const total=handValue(bjPlayer);
-
- if(total>21){
-  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
- }else if(total===21){
-  dealerTurn();
- }else{
-  lockBjButtons(false);
- }
+ if(total>21)finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+ else if(total===21)dealerTurn();
+ else bjBusy=false;
 }
-
 function standBlackjack(){
- if(!bjActive||bjActionLocked)return;
-
- lockBjButtons(true);
- dealerTurn();
+ if(!bjActive||bjBusy)return;
+ bjBusy=true;dealerTurn();
 }
-
 $('bjStart').addEventListener('click',startBlackjack);
 $('bjDouble').addEventListener('click',doubleBlackjack);
 $('bjKeep').addEventListener('click',continueInitialBet);
 $('bjHit').addEventListener('click',hitBlackjack);
 $('bjStand').addEventListener('click',standBlackjack);
 
-
 // GRÁFICO
-
 function drawChart(){
-
  const c=$('chart');
-
- if(c.clientWidth && (c.width!==c.clientWidth||c.height!==c.clientHeight)){
-  c.width=c.clientWidth;
-  c.height=c.clientHeight;
- }
-
- const g=c.getContext('2d');
- const w=c.width,h=c.height;
- const pad={l:55,r:15,t:15,b:28};
-
- g.clearRect(0,0,w,h);
- g.fillStyle='#111a29';
- g.fillRect(0,0,w,h);
-
- const vals=priceHistory.slice(-80);
- const min=Math.min(...vals)*.94;
- const max=Math.max(...vals)*1.06||1;
- const range=max-min||1;
-
- g.font='12px system-ui';
- g.fillStyle='#9eacc2';
- g.strokeStyle='#344258';
- g.lineWidth=1;
-
+ if(c.clientWidth&&(c.width!==c.clientWidth||c.height!==c.clientHeight)){c.width=c.clientWidth;c.height=c.clientHeight}
+ const g=c.getContext('2d'),w=c.width,h=c.height,pad={l:55,r:15,t:15,b:28};
+ g.clearRect(0,0,w,h);g.fillStyle='#111a29';g.fillRect(0,0,w,h);
+ const vals=priceHistory.slice(-80),min=Math.min(...vals)*.94,max=Math.max(...vals)*1.06||1,range=max-min||1;
+ g.font='12px system-ui';g.fillStyle='#9eacc2';g.strokeStyle='#344258';g.lineWidth=1;
  for(let i=0;i<5;i++){
-
   const y=pad.t+(h-pad.t-pad.b)*i/4;
-
-  g.beginPath();
-  g.moveTo(pad.l,y);
-  g.lineTo(w-pad.r,y);
-  g.stroke();
-
+  g.beginPath();g.moveTo(pad.l,y);g.lineTo(w-pad.r,y);g.stroke();
   g.fillText((max-range*i/4).toFixed(2),5,y+4);
  }
-
- if(vals.length<2){
-  g.fillText('El gráfico se irá completando con los movimientos…',pad.l+8,h/2);
-  return;
- }
-
- const xStep=(w-pad.l-pad.r)/(vals.length-1);
- const yFor=v=>pad.t+(max-v)/range*(h-pad.t-pad.b);
-
+ if(vals.length<2){g.fillText('El gráfico se irá completando con los movimientos…',pad.l+8,h/2);return}
+ const xStep=(w-pad.l-pad.r)/(vals.length-1),yFor=v=>pad.t+(max-v)/range*(h-pad.t-pad.b);
  g.beginPath();
-
- vals.forEach((v,i)=>{
-  const x=pad.l+i*xStep;
-  const y=yFor(v);
-
-  if(i===0)g.moveTo(x,y);
-  else g.lineTo(x,y);
- });
-
- const isUp=vals[vals.length-1]>=vals[vals.length-2];
- const lineColor=isUp?'#70e6a0':'#ff3b3b';
-
- g.strokeStyle=lineColor;
- g.lineWidth=4;
- g.stroke();
-
- const lastX=pad.l+(vals.length-1)*xStep;
- const lastY=yFor(vals[vals.length-1]);
-
- g.beginPath();
- g.arc(lastX,lastY,5,0,Math.PI*2);
- g.fillStyle=lineColor;
- g.fill();
-
- g.fillStyle='#9eacc2';
- g.fillText('Anterior',pad.l,h-7);
- g.textAlign='right';
- g.fillText('Actual',w-pad.r,h-7);
- g.textAlign='left';
+ vals.forEach((v,i)=>{const x=pad.l+i*xStep,y=yFor(v);if(i===0)g.moveTo(x,y);else g.lineTo(x,y)});
+ const up=vals[vals.length-1]>=vals[vals.length-2],lineColor=up?'#70e6a0':'#ff3b3b';
+ g.strokeStyle=lineColor;g.lineWidth=4;g.stroke();
+ const lastX=pad.l+(vals.length-1)*xStep,lastY=yFor(vals[vals.length-1]);
+ g.beginPath();g.arc(lastX,lastY,5,0,Math.PI*2);g.fillStyle=lineColor;g.fill();
+ g.fillStyle='#9eacc2';g.fillText('Anterior',pad.l,h-7);g.textAlign='right';g.fillText('Actual',w-pad.r,h-7);g.textAlign='left';
 }
-
-// HISTORIAL
-
 function updateHistory(){
-
- $('marketHistory').innerHTML=marketHistory.length
- ?marketHistory.map(m=>
-  `<div class="history-row">
-   <span>${m.up?'📈':'📉'} ${m.change}</span>
-   <strong>🍌 ${m.price.toFixed(2)}</strong>
-  </div>`
- ).join('')
- :'Todavía no hubo movimientos.';
-
+ $('marketHistory').innerHTML=marketHistory.length?marketHistory.map(m=>
+  `<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>🍌 ${m.price.toFixed(2)}</strong></div>`
+ ).join(''):'Todavía no hubo movimientos.';
  $('moveCount').textContent=marketHistory.length;
 }
-
-// MOVIMIENTOS DEL MERCADO
-
 function marketTick(){
-
- let chanceUp=0.50;
-
- if(phase===0)chanceUp=0.60;
- if(phase===1)chanceUp=0.40;
-
+ let chanceUp=.5;if(phase===0)chanceUp=.6;if(phase===1)chanceUp=.4;
  const up=Math.random()<chanceUp;
-
  price=Math.max(.01,price*(up?1.10:.90));
-
  const change=up?'+10%':'−10%';
-
- $('movement').innerHTML=
- `<span class="${up?'good':'bad'}">
- ${up?'📈 Subió':'📉 Bajó'} ${change}
- </span>`;
-
- marketHistory.unshift({up,change,price});
- marketHistory=marketHistory.slice(0,8);
-
- priceHistory.push(price);
- if(priceHistory.length>300)priceHistory.shift();
-
- updateHistory();
- updateWallet();
- drawChart();
+ $('movement').innerHTML=`<span class="${up?'good':'bad'}">${up?'📈 Subió':'📉 Bajó'} ${change}</span>`;
+ marketHistory.unshift({up,change,price});marketHistory=marketHistory.slice(0,8);
+ priceHistory.push(price);if(priceHistory.length>300)priceHistory.shift();
+ updateHistory();updateWallet();drawChart();
 }
-
-// COMPRAR FRANCOINS
-
 $('buy').addEventListener('click',()=>{
-
  const amount=Number($('tradeAmount').value);
-
- if(!Number.isFinite(amount)||amount<=0){
-  $('marketResult').textContent='Ingresá una cantidad válida.';
-  return;
- }
-
- if(amount>bananas){
-  $('marketResult').textContent='No tenés suficientes bananas.';
-  return;
- }
-
- const bought=amount/price;
-
- bananas-=amount;
- franCoins+=bought;
-
- updateWallet();
-
- $('marketResult').innerHTML=
- `<span class="good">Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.</span>`;
+ if(!Number.isFinite(amount)||amount<=0){$('marketResult').textContent='Ingresá una cantidad válida.';return}
+ if(amount>bananas){$('marketResult').textContent='No tenés suficientes bananas.';return}
+ const bought=amount/price;bananas-=amount;franCoins+=bought;updateWallet();
+ $('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.</span>`;
 });
-
-// VENDER FRANCOINS
-
 $('sell').addEventListener('click',()=>{
-
- if(franCoins<=0){
-  $('marketResult').textContent='No tenés FranCoins para vender.';
-  return;
- }
-
- const received=franCoins*price;
- const sold=franCoins;
-
- bananas+=received;
- franCoins=0;
-
- updateWallet();
-
- $('marketResult').innerHTML=
- `<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste 🍌 ${received.toFixed(2)}.</span>`;
+ if(franCoins<=0){$('marketResult').textContent='No tenés FranCoins para vender.';return}
+ const received=franCoins*price,sold=franCoins;
+ bananas+=received;franCoins=0;updateWallet();
+ $('marketResult').innerHTML=`<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste 🍌 ${received.toFixed(2)}.</span>`;
 });
-
-// TEMPORIZADOR
 
 setInterval(()=>{
-
  moveSeconds--;
-
- if(moveSeconds<=0){
-  marketTick();
-  moveSeconds=3;
- }
-
+ if(moveSeconds<=0){marketTick();moveSeconds=3}
  $('nextMove').textContent=moveSeconds+' s';
-
  phaseSeconds--;
-
- if(phaseSeconds<=0){
-  phase=randomStage();
-  manualStage=false;
-  phaseSeconds=15;
- }
-
+ if(phaseSeconds<=0){phase=randomStage();manualStage=false;phaseSeconds=15}
  updateStageUI();
-
 },1000);
 
-// INICIO
-
-updateWallet();
-drawChart();
-
+updateWallet();drawChart();
 </script>
 </body>
 </html>
