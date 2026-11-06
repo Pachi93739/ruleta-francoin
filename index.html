@@ -100,9 +100,9 @@ canvas#chart{width:100%;height:220px;display:block}
 </header>
 
 <section class="wallet">
-<div class="stat"><small>TUS BANANAS</small><strong id="bananas">🍌 100.00</strong></div>
+<div class="stat"><small>TUS PESOS</small><strong id="bananas">$ 100.00</strong></div>
 <div class="stat"><small>FRANCOINS</small><strong id="holdings">🪙 0.000</strong></div>
-<div class="stat"><small>VALOR DE CARTERA</small><strong id="portfolio">🍌 0.00</strong></div>
+<div class="stat"><small>VALOR DE CARTERA</small><strong id="portfolio">$ 0.00</strong></div>
 </section>
 
 <nav class="tabs">
@@ -119,7 +119,7 @@ canvas#chart{width:100%;height:220px;display:block}
 <canvas class="wheel" id="wheel" width="600" height="600"></canvas>
 <div class="center"></div>
 </div>
-<label for="bet">Apuesta en bananas</label>
+<label for="bet">Apuesta en pesos</label>
 <input id="bet" type="number" min="1" step="1" value="10">
 <label>Elegí un color</label>
 <div class="colors">
@@ -131,7 +131,7 @@ canvas#chart{width:100%;height:220px;display:block}
 <h3>⚡ Mejoras de ruleta</h3>
 <div class="upgrade-info">
 <div><small>NIVEL DE MEJORA</small><strong id="upgradeLevel">0</strong></div>
-<div><small>PRÓXIMA MEJORA</small><strong id="upgradeCost">🍌 100.00</strong></div>
+<div><small>PRÓXIMA MEJORA</small><strong id="upgradeCost">$ 100.00</strong></div>
 </div>
 <p class="muted">Cada mejora suma una cantidad fija. El aumento crece un 50% cada 10 mejoras.</p>
 <p class="muted" id="nextUpgradeIncrease">Próximo aumento: +0.05</p>
@@ -139,13 +139,14 @@ canvas#chart{width:100%;height:220px;display:block}
 </div>
 <button class="action" id="spin">GIRAR RULETA</button>
 <button class="action secondary" id="autoSpin">▶ ACTIVAR AUTO SPIN</button>
+<button class="action secondary" id="speedBtn">⚡ VELOCIDAD X1</button>
 <div class="result" id="rouletteResult">Elegí tu color y girá.</div>
 </section>
 
 <section class="panel page" id="blackjack">
 <h2>🃏 Blackjack</h2>
 <p class="muted">Acercate a 21 sin pasarte. El dealer se planta en 17.</p>
-<label for="bjBet">Apuesta en bananas</label>
+<label for="bjBet">Apuesta en pesos</label>
 <input id="bjBet" type="number" min="1" step="1" value="10">
 <button class="action" id="bjStart">REPARTIR CARTAS</button>
 <div class="blackjack-table">
@@ -172,18 +173,18 @@ canvas#chart{width:100%;height:220px;display:block}
 <h2>🪙 Mercado FranCoin</h2>
 <p class="muted">El precio cambia cada 3 segundos.</p>
 <div class="coin-icon">🪙</div>
-<div class="price" id="price">🍌 10.00</div>
+<div class="price" id="price">$ 10.00</div>
 <div class="movement" id="movement">Esperando primer movimiento…</div>
 <div class="market-stats">
 <div><small>TUS FRANCOINS</small><strong id="coinCount">0.000</strong></div>
-<div><small>VALOR DE TUS MONEDAS</small><strong id="coinValue">🍌 0.00</strong></div>
+<div><small>VALOR DE TUS MONEDAS</small><strong id="coinValue">$ 0.00</strong></div>
 <div><small>PRÓXIMO MOVIMIENTO</small><strong id="nextMove">3 s</strong></div>
 <div><small>CAMBIOS REGISTRADOS</small><strong id="moveCount">0</strong></div>
 </div>
 <div class="stage-box">
 <h3>🎛️ Control de etapas FranCoin</h3>
 <p class="muted" style="text-align:center">Las etapas cambian automáticamente. También podés pagar para elegir una.</p>
-<div class="stage-price">💰 Precio del cambio: <span id="stageCost">🍌 1000.00</span></div>
+<div class="stage-price">💰 Precio del cambio: <span id="stageCost">$ 1000.00</span></div>
 <div class="stage-status" id="stageStatus">❔ Etapa desconocida</div>
 <div class="stage-buttons">
 <button class="stage-btn stage-good" id="goodStage">📈 BUENA<small>60% subir</small></button>
@@ -192,20 +193,20 @@ canvas#chart{width:100%;height:220px;display:block}
 </div>
 <p class="muted" style="text-align:center;margin-top:12px">Cada cambio cuesta 100 veces el precio actual de una FranCoin y dura 15 segundos.</p>
 </div>
-<label for="tradeAmount">Cantidad de bananas para comprar</label>
+<label for="tradeAmount">Cantidad de pesos para comprar</label>
 <input id="tradeAmount" type="number" min="0.01" step="0.01" value="10">
 <div class="trade-buttons">
 <button class="action" id="buy">COMPRAR</button>
 <button class="action secondary" id="sell">VENDER TODO</button>
 </div>
-<div class="result" id="marketResult">Comprá FranCoins usando tus bananas.</div>
+<div class="result" id="marketResult">Comprá FranCoins usando tus pesos.</div>
 <div class="chartbox">
 <div class="chart-head"><strong>📈 Historial del precio</strong><span id="chartRange">Desde el inicio</span></div>
 <canvas id="chart" width="700" height="260"></canvas>
 </div>
 <div class="history"><strong>Últimos movimientos</strong><div id="marketHistory">Todavía no hubo movimientos.</div></div>
 </section>
-<p class="foot">Todo usa bananas ficticias. Las etapas automáticas cambian cada 15 segundos.</p>
+<p class="foot">Todo usa pesos ficticios. Las etapas automáticas cambian cada 15 segundos.</p>
 </main>
 
 <script>
@@ -229,7 +230,7 @@ function nextUpgradeIncrease(){return .05*Math.pow(1.5,Math.floor(upgrades/10))}
 
 function updateUpgrade(){
  $('upgradeLevel').textContent=upgrades;
- $('upgradeCost').textContent='🍌 '+upgradeCost().toFixed(2);
+ $('upgradeCost').textContent='$ '+upgradeCost().toFixed(2);
  $('nextUpgradeIncrease').textContent='Próximo aumento: +'+nextUpgradeIncrease().toFixed(5);
  const f=n=>Number(n.toFixed(5)).toString();
  $('redMultiplier').textContent='x'+f(2*multiplierLevel);
@@ -243,12 +244,12 @@ let phase=randomStage(),manualStage=false,phaseSeconds=15,moveSeconds=3;
 let marketHistory=[],priceHistory=[10];
 
 function updateWallet(){
- $('bananas').textContent='🍌 '+bananas.toFixed(2);
+ $('bananas').textContent='$ '+bananas.toFixed(2);
  $('holdings').textContent='🪙 '+franCoins.toFixed(3);
- $('portfolio').textContent='🍌 '+(franCoins*price).toFixed(2);
+ $('portfolio').textContent='$ '+(franCoins*price).toFixed(2);
  $('coinCount').textContent=franCoins.toFixed(3);
- $('coinValue').textContent='🍌 '+(franCoins*price).toFixed(2);
- $('price').textContent='🍌 '+price.toFixed(2);
+ $('coinValue').textContent='$ '+(franCoins*price).toFixed(2);
+ $('price').textContent='$ '+price.toFixed(2);
  updateUpgrade();updateStageUI();
 }
 
@@ -256,10 +257,10 @@ function stageCost(){return price*100}
 function stageName(){
  if(phase===0)return '📈 Etapa buena · 60% subir / 40% bajar';
  if(phase===1)return '📉 Etapa mala · 40% subir / 60% bajar';
- return '⚖️ Etapa neutra · 50% subir / 50% bajar';
+ return '⚖️ Etapa neutra · 50% / 50%';
 }
 function updateStageUI(){
- $('stageCost').textContent='🍌 '+stageCost().toFixed(2);
+ $('stageCost').textContent='$ '+stageCost().toFixed(2);
  $('stageStatus').textContent=manualStage?stageName()+' · '+phaseSeconds+' s restantes':'❔ Etapa desconocida';
  $('goodStage').disabled=bananas<stageCost();
  $('badStage').disabled=bananas<stageCost();
@@ -268,7 +269,7 @@ function updateStageUI(){
 function changeStage(newPhase){
  const cost=stageCost();
  if(bananas<cost){
-  $('marketResult').innerHTML='<span class="bad">No tenés suficientes bananas. Necesitás 🍌 '+cost.toFixed(2)+'.</span>';return;
+  $('marketResult').innerHTML='<span class="bad">No tenés suficientes pesos. Necesitás $ '+cost.toFixed(2)+'.</span>';return;
  }
  bananas-=cost;phase=newPhase;manualStage=true;phaseSeconds=15;
  updateWallet();
@@ -303,6 +304,18 @@ document.querySelectorAll('.color').forEach(btn=>{
  });
 });
 
+// VELOCIDAD DE RULETA
+let wheelSpeed=1;
+
+function updateWheelSpeed(){
+ $('wheel').style.transitionDuration=(4/wheelSpeed)+'s';
+ $('speedBtn').textContent=wheelSpeed===1?'⚡ VELOCIDAD X1':'⚡ VELOCIDAD X2';
+}
+$('speedBtn').addEventListener('click',()=>{
+ wheelSpeed=wheelSpeed===1?2:1;
+ updateWheelSpeed();
+});
+
 let autoSpinning=false;
 function stopAutoSpin(message=''){
  autoSpinning=false;$('autoSpin').textContent='▶ ACTIVAR AUTO SPIN';
@@ -312,7 +325,7 @@ function spinRound(){
  if(spinning)return;
  const bet=Number($('bet').value);
  if(!Number.isInteger(bet)||bet<1||bet>bananas){
-  $('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus bananas.';
+  $('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus pesos.';
   stopAutoSpin();$('spin').disabled=false;return;
  }
  spinning=true;$('spin').disabled=true;updateUpgrade();
@@ -325,15 +338,15 @@ function spinRound(){
  setTimeout(()=>{
   bananas=bananas-bet+payout;updateWallet();
   $('rouletteResult').innerHTML=win
-   ?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`
-   :`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;
+   ?`<strong class="good">¡ACERTASTE! ${color} · +$ ${(payout-bet).toFixed(2)}</strong><br>Premio total: $ ${payout.toFixed(2)}`
+   :`<strong class="bad">Salió ${color}. Perdiste $ ${bet.toFixed(2)}.</strong>`;
   spinning=false;$('spin').disabled=false;updateUpgrade();
   if(autoSpinning){
    if(bananas>=Number($('bet').value)){
     setTimeout(()=>{if(autoSpinning)spinRound()},400);
-   }else stopAutoSpin('Auto Spin detenido: no tenés suficientes bananas.');
+   }else stopAutoSpin('Auto Spin detenido: no tenés suficientes pesos.');
   }
- },4100);
+ },(4000/wheelSpeed)+100);
 }
 $('spin').addEventListener('click',()=>{if(!spinning)spinRound()});
 $('autoSpin').addEventListener('click',()=>{
@@ -418,15 +431,15 @@ function dealerTurn(){
 
  if(d>21){
   bananas+=bjBet*2;
-  finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good');
+  finishBlackjack('¡El dealer se pasó! Ganaste $ '+(bjBet*2).toFixed(2),'good');
  }else if(p>d){
   bananas+=bjBet*2;
-  finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good');
+  finishBlackjack('¡Ganaste! $ '+(bjBet*2).toFixed(2),'good');
  }else if(p===d){
   bananas+=bjBet;
   finishBlackjack('Empate. Recuperaste tu apuesta.');
  }else{
-  finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+  finishBlackjack('Ganó el dealer. Perdiste $ '+bjBet.toFixed(2),'bad');
  }
 }
 
@@ -465,9 +478,9 @@ function startBlackjack(){
    finishBlackjack('¡Empate! Ambos tienen Blackjack.');
   }else if(playerNatural){
    bananas+=bjBet*2.5;
-   finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good');
+   finishBlackjack('¡BLACKJACK! Ganaste $ '+(bjBet*2.5).toFixed(2),'good');
   }else{
-   finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+   finishBlackjack('El dealer tiene Blackjack. Perdiste $ '+bjBet.toFixed(2),'bad');
   }
  }
 }
@@ -488,15 +501,12 @@ function doubleBlackjack(){
  if(bjPhase!=='decision')return;
 
  if(bananas<bjBet){
-  $('bjResult').textContent='No tenés suficientes bananas para duplicar.';
+  $('bjResult').textContent='No tenés suficientes pesos para duplicar.';
   return;
  }
 
- // Cobrar la apuesta adicional y duplicar la apuesta.
  bananas-=bjBet;
  bjBet*=2;
-
- // Pasar a la fase de juego normal, sin robar ninguna carta.
  bjPhase='playing';
 
  $('bjDecision').style.display='none';
@@ -517,7 +527,7 @@ function hitBlackjack(){
  const total=handValue(bjPlayer);
 
  if(total>21){
-  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+  finishBlackjack('Te pasaste de 21. Perdiste $ '+bjBet.toFixed(2),'bad');
  }else if(total===21){
   bjPhase='dealer';
   dealerTurn();
@@ -563,7 +573,7 @@ function drawChart(){
 
 function updateHistory(){
  $('marketHistory').innerHTML=marketHistory.length?marketHistory.map(m=>
-  `<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>🍌 ${m.price.toFixed(2)}</strong></div>`
+  `<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>$ ${m.price.toFixed(2)}</strong></div>`
  ).join(''):'Todavía no hubo movimientos.';
  $('moveCount').textContent=marketHistory.length;
 }
@@ -582,16 +592,16 @@ function marketTick(){
 $('buy').addEventListener('click',()=>{
  const amount=Number($('tradeAmount').value);
  if(!Number.isFinite(amount)||amount<=0){$('marketResult').textContent='Ingresá una cantidad válida.';return}
- if(amount>bananas){$('marketResult').textContent='No tenés suficientes bananas.';return}
+ if(amount>bananas){$('marketResult').textContent='No tenés suficientes pesos.';return}
  const bought=amount/price;bananas-=amount;franCoins+=bought;updateWallet();
- $('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.</span>`;
+ $('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por $ ${amount.toFixed(2)}.</span>`;
 });
 
 $('sell').addEventListener('click',()=>{
  if(franCoins<=0){$('marketResult').textContent='No tenés FranCoins para vender.';return}
  const received=franCoins*price,sold=franCoins;
  bananas+=received;franCoins=0;updateWallet();
- $('marketResult').innerHTML=`<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste 🍌 ${received.toFixed(2)}.</span>`;
+ $('marketResult').innerHTML=`<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste $ ${received.toFixed(2)}.</span>`;
 });
 
 setInterval(()=>{
@@ -603,7 +613,7 @@ setInterval(()=>{
  updateStageUI();
 },1000);
 
-updateWallet();drawChart();
+updateWallet();drawChart();updateWheelSpeed();
 </script>
 </body>
 </html>
