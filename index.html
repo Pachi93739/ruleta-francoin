@@ -165,7 +165,13 @@ canvas#chart{width:100%;height:220px;display:block}
 </div>
 </div>
 
-<p class="muted">Cada mejora aumenta todos los multiplicadores un 5%.</p>
+<p class="muted">
+Cada mejora suma una cantidad fija. El aumento crece un 50% cada 10 mejoras.
+</p>
+
+<p class="muted" id="nextUpgradeIncrease">
+Próximo aumento: +0.05
+</p>
 
 <button class="action" id="upgradeBtn">
 ⚡ MEJORAR MULTIPLICADOR
@@ -222,7 +228,7 @@ Elegí tu color y girá.
 <h3>🎛️ Control de etapas FranCoin</h3>
 
 <p class="muted" style="text-align:center">
-Elegí qué etapa querés activar durante 15 segundos.
+Las etapas cambian automáticamente. También podés pagar para elegir una.
 </p>
 
 <div class="stage-price">
@@ -230,7 +236,7 @@ Elegí qué etapa querés activar durante 15 segundos.
 </div>
 
 <div class="stage-status" id="stageStatus">
-⚖️ Etapa neutra · 50% subir / 50% bajar
+❔ Etapa desconocida
 </div>
 
 <div class="stage-buttons">
@@ -253,7 +259,7 @@ Elegí qué etapa querés activar durante 15 segundos.
 </div>
 
 <p class="muted" style="text-align:center;margin-top:12px">
-Cada cambio cuesta 100 veces el precio actual de una FranCoin.
+Cada cambio cuesta 100 veces el precio actual de una FranCoin y dura 15 segundos.
 </p>
 
 </div>
@@ -286,7 +292,7 @@ Comprá FranCoins usando tus bananas.
 </section>
 
 <p class="foot">
-Todo usa bananas ficticias. Las etapas duran 15 segundos y podés elegir cuál activar.
+Todo usa bananas ficticias. Las etapas automáticas cambian cada 15 segundos.
 </p>
 
 </main>
@@ -317,8 +323,16 @@ let spinning=false;
 let upgrades=0;
 let multiplierLevel=1;
 
+// El precio de cada mejora sigue aumentando un 5%.
 function upgradeCost(){
  return 100*Math.pow(1.05,upgrades);
+}
+
+// Calcula cuánto suma la próxima mejora.
+// Cada bloque de 10 usos aumenta la suma un 50%.
+function nextUpgradeIncrease(){
+ const block=Math.floor(upgrades/10);
+ return 0.05*Math.pow(1.5,block);
 }
 
 function updateUpgrade(){
@@ -326,7 +340,10 @@ function updateUpgrade(){
  $('upgradeLevel').textContent=upgrades;
  $('upgradeCost').textContent='🍌 '+upgradeCost().toFixed(2);
 
- const formatMultiplier=n=>Number(n.toFixed(3)).toString();
+ $('nextUpgradeIncrease').textContent=
+ 'Próximo aumento: +'+nextUpgradeIncrease().toFixed(5);
+
+ const formatMultiplier=n=>Number(n.toFixed(5)).toString();
 
  $('redMultiplier').textContent='x'+formatMultiplier(2*multiplierLevel);
  $('blackMultiplier').textContent='x'+formatMultiplier(2*multiplierLevel);
@@ -337,8 +354,16 @@ function updateUpgrade(){
 
 // VARIABLES DEL MERCADO
 
-let phase=2; // 0 buena, 1 mala, 2 neutra
-let phaseSeconds=0;
+// 0 buena, 1 mala, 2 neutra
+function randomStage(){
+ return Math.floor(Math.random()*3);
+}
+
+// La etapa automática comienza inmediatamente.
+let phase=randomStage();
+let manualStage=false;
+let phaseSeconds=15;
+
 let moveSeconds=3;
 
 let marketHistory=[];
@@ -377,9 +402,14 @@ function updateStageUI(){
 
  $('stageCost').textContent='🍌 '+stageCost().toFixed(2);
 
- $('stageStatus').textContent=
- stageName()+(phaseSeconds>0?' · '+phaseSeconds+' s restantes':'');
- 
+ // La etapa automática siempre permanece oculta.
+ if(manualStage){
+  $('stageStatus').textContent=
+   stageName()+' · '+phaseSeconds+' s restantes';
+ }else{
+  $('stageStatus').textContent='❔ Etapa desconocida';
+ }
+
  $('goodStage').disabled=bananas<stageCost();
  $('badStage').disabled=bananas<stageCost();
  $('neutralStage').disabled=bananas<stageCost();
@@ -399,13 +429,13 @@ function changeStage(newPhase){
 
  bananas-=cost;
  phase=newPhase;
+ manualStage=true;
  phaseSeconds=15;
 
  updateWallet();
 
  $('marketResult').innerHTML=
  '<span class="good">¡Etapa cambiada! '+stageName()+'. Dura 15 segundos.</span>';
-
 }
 
 $('goodStage').addEventListener('click',()=>changeStage(0));
@@ -486,14 +516,19 @@ $('upgradeBtn').addEventListener('click',()=>{
 
  if(bananas<cost)return;
 
+ // Calculamos el aumento antes de incrementar el contador.
+ const increase=nextUpgradeIncrease();
+
  bananas-=cost;
  upgrades++;
- multiplierLevel*=1.05;
+
+ // Se suma una cantidad fija, no un porcentaje.
+ multiplierLevel+=increase;
 
  updateWallet();
 
  $('rouletteResult').innerHTML=
- '<strong class="good">⚡ ¡MEJORA COMPRADA! Multiplicadores aumentados un 5%.</strong>';
+ '<strong class="good">⚡ ¡MEJORA COMPRADA! Se sumó +'+increase.toFixed(5)+' al multiplicador.</strong>';
 
 });
 
@@ -746,18 +781,21 @@ setInterval(()=>{
 
  $('nextMove').textContent=moveSeconds+' s';
 
- if(phaseSeconds>0){
+ // Las etapas duran 15 segundos.
+ // Cuando termina una etapa manual, vuelve el modo automático.
+ // En automático, la etapa cambia secretamente cada 15 segundos.
 
-  phaseSeconds--;
+ phaseSeconds--;
 
-  if(phaseSeconds===0){
+ if(phaseSeconds<=0){
 
-   phase=2;
-  }
-
-  updateStageUI();
+  phase=randomStage();
+  manualStage=false;
+  phaseSeconds=15;
 
  }
+
+ updateStageUI();
 
 },1000);
 
