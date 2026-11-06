@@ -351,14 +351,16 @@ $('upgradeBtn').addEventListener('click',()=>{
  $('rouletteResult').innerHTML='<strong class="good">⚡ ¡MEJORA COMPRADA! Se sumó +'+increase.toFixed(5)+' al multiplicador.</strong>';
 });
 
-// BLACKJACK CORREGIDO
-let bjPlayer=[],bjDealer=[],bjBet=0,bjActive=false,bjBusy=false;
+// BLACKJACK
+let bjPlayer=[],bjDealer=[],bjBet=0,bjActive=false;
+let bjPhase='idle';
 
 function drawCard(){
  const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
  const suits=['♠','♥','♦','♣'];
  return {rank:ranks[Math.floor(Math.random()*ranks.length)],suit:suits[Math.floor(Math.random()*suits.length)]};
 }
+
 function handValue(hand){
  let total=0,aces=0;
  hand.forEach(card=>{
@@ -369,94 +371,175 @@ function handValue(hand){
  while(total>21&&aces>0){total-=10;aces--}
  return total;
 }
-function renderCards(revealDealer=false){
- const hidden=bjActive&&!revealDealer;
- $('playerCards').innerHTML=bjPlayer.map(card=>
-  `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">${card.rank}${card.suit}</div>`
- ).join('');
- $('dealerCards').innerHTML=bjDealer.map((card,i)=>{
-  if(hidden&&i===1)return '<div class="playing-card hidden-card">?</div>';
+
+function renderCards(revealAll=false){
+ const hidePlayer=bjPhase==='decision'&&!revealAll;
+ const hideDealer=bjActive&&!revealAll;
+
+ $('playerCards').innerHTML=bjPlayer.map((card,i)=>{
+  if(hidePlayer&&i===1)return '<div class="playing-card hidden-card">?</div>';
   return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">${card.rank}${card.suit}</div>`;
  }).join('');
- $('playerScore').textContent='Puntos: '+handValue(bjPlayer);
- $('dealerScore').textContent=hidden?'Puntos: '+handValue([bjDealer[0]])+' + ?':'Puntos: '+handValue(bjDealer);
-}
-function finishBlackjack(message,type=''){
- bjActive=false;bjBusy=false;
- $('bjDecision').style.display='none';$('bjPlay').style.display='none';
- $('bjResult').innerHTML=`<strong class="${type}">${message}</strong>`;
- renderCards(true);updateWallet();
-}
-function dealerTurn(){
- $('bjDecision').style.display='none';$('bjPlay').style.display='none';
- renderCards(true);
- while(handValue(bjDealer)<17)bjDealer.push(drawCard());
- renderCards(true);
- const p=handValue(bjPlayer),d=handValue(bjDealer);
- if(d>21){bananas+=bjBet*2;finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good')}
- else if(p>d){bananas+=bjBet*2;finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good')}
- else if(p===d){bananas+=bjBet;finishBlackjack('Empate. Recuperaste tu apuesta.')}
- else finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
-}
-function startBlackjack(){
- if(bjActive||bjBusy)return;
- const bet=Number($('bjBet').value);
- if(!Number.isInteger(bet)||bet<1||bet>bananas){
-  $('bjResult').textContent='Ingresá una apuesta entera válida.';return;
- }
- bjBet=bet;bananas-=bet;
- bjPlayer=[drawCard(),drawCard()];
- bjDealer=[drawCard(),drawCard()];
- bjActive=true;bjBusy=false;
- $('bjDecision').style.display='grid';$('bjPlay').style.display='none';
- $('bjResult').textContent='¿Querés duplicar la apuesta o seguir con la inicial?';
- renderCards();updateWallet();
 
- const pn=handValue(bjPlayer)===21,dn=handValue(bjDealer)===21;
- if(pn||dn){
-  if(pn&&dn){bananas+=bjBet;finishBlackjack('¡Empate! Ambos tienen Blackjack.')}
-  else if(pn){bananas+=bjBet*2.5;finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good')}
-  else finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
- }
+ $('dealerCards').innerHTML=bjDealer.map((card,i)=>{
+  if(hideDealer&&i===1)return '<div class="playing-card hidden-card">?</div>';
+  return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">${card.rank}${card.suit}</div>`;
+ }).join('');
+
+ $('playerScore').textContent=hidePlayer?'Puntos: ?':'Puntos: '+handValue(bjPlayer);
+ $('dealerScore').textContent=hideDealer
+  ?'Puntos: '+handValue([bjDealer[0]])+' + ?'
+  :'Puntos: '+handValue(bjDealer);
 }
-function continueInitialBet(){
- if(!bjActive||bjBusy)return;
- $('bjDecision').style.display='none';
- $('bjPlay').style.display='grid';
- $('bjResult').textContent='Podés pedir cartas o plantarte.';
-}
-function doubleBlackjack(){
- if(!bjActive||bjBusy)return;
- bjBusy=true;
- if(bananas<bjBet){
-  $('bjResult').textContent='No tenés suficientes bananas para duplicar.';
-  bjBusy=false;return;
- }
- // Desactivar primero las opciones para impedir acciones simultáneas.
+
+function finishBlackjack(message,type=''){
+ bjPhase='finished';
+ bjActive=false;
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='none';
- bananas-=bjBet;bjBet*=2;
- // Se entrega una sola carta adicional.
- bjPlayer.push(drawCard());
- renderCards();updateWallet();
- if(handValue(bjPlayer)>21){
-  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');return;
+ $('bjResult').innerHTML=`<strong class="${type}">${message}</strong>`;
+ renderCards(true);
+ updateWallet();
+}
+
+function dealerTurn(){
+ if(bjPhase!=='dealer')return;
+
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='none';
+
+ renderCards(true);
+
+ while(handValue(bjDealer)<17)bjDealer.push(drawCard());
+
+ renderCards(true);
+
+ const p=handValue(bjPlayer),d=handValue(bjDealer);
+
+ if(d>21){
+  bananas+=bjBet*2;
+  finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good');
+ }else if(p>d){
+  bananas+=bjBet*2;
+  finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good');
+ }else if(p===d){
+  bananas+=bjBet;
+  finishBlackjack('Empate. Recuperaste tu apuesta.');
+ }else{
+  finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
  }
+}
+
+function startBlackjack(){
+ if(bjPhase==='decision'||bjPhase==='playing'||bjPhase==='dealer')return;
+
+ const bet=Number($('bjBet').value);
+
+ if(!Number.isInteger(bet)||bet<1||bet>bananas){
+  $('bjResult').textContent='Ingresá una apuesta entera válida.';
+  return;
+ }
+
+ bjBet=bet;
+ bananas-=bet;
+
+ bjPlayer=[drawCard(),drawCard()];
+ bjDealer=[drawCard(),drawCard()];
+
+ bjActive=true;
+ bjPhase='decision';
+
+ $('bjDecision').style.display='grid';
+ $('bjPlay').style.display='none';
+ $('bjResult').textContent='Cada uno tiene una carta oculta. ¿Querés duplicar o seguir con la apuesta inicial?';
+
+ renderCards();
+ updateWallet();
+
+ const playerNatural=handValue(bjPlayer)===21;
+ const dealerNatural=handValue(bjDealer)===21;
+
+ if(playerNatural||dealerNatural){
+  if(playerNatural&&dealerNatural){
+   bananas+=bjBet;
+   finishBlackjack('¡Empate! Ambos tienen Blackjack.');
+  }else if(playerNatural){
+   bananas+=bjBet*2.5;
+   finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good');
+  }else{
+   finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+  }
+ }
+}
+
+function continueInitialBet(){
+ if(bjPhase!=='decision')return;
+
+ bjPhase='playing';
+
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='grid';
+ $('bjResult').textContent='Tu segunda carta ya está descubierta. Podés pedir cartas o plantarte.';
+
+ renderCards();
+}
+
+function doubleBlackjack(){
+ if(bjPhase!=='decision')return;
+
+ if(bananas<bjBet){
+  $('bjResult').textContent='No tenés suficientes bananas para duplicar.';
+  return;
+ }
+
+ // Cambiamos la fase primero: así no puede activarse también PEDIR CARTA.
+ bjPhase='dealer';
+
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='none';
+
+ // Se cobra la segunda apuesta y se duplica el valor de la apuesta.
+ bananas-=bjBet;
+ bjBet*=2;
+
+ // Se revela tu segunda carta y recibís exactamente una carta adicional.
+ bjPlayer.push(drawCard());
+
+ renderCards();
+ updateWallet();
+
+ if(handValue(bjPlayer)>21){
+  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+  return;
+ }
+
+ // El dealer juega automáticamente después de duplicar.
  dealerTurn();
 }
+
 function hitBlackjack(){
- if(!bjActive||bjBusy)return;
- bjBusy=true;
- bjPlayer.push(drawCard());renderCards();
+ if(bjPhase!=='playing')return;
+
+ bjPlayer.push(drawCard());
+ renderCards();
+
  const total=handValue(bjPlayer);
- if(total>21)finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
- else if(total===21)dealerTurn();
- else bjBusy=false;
+
+ if(total>21){
+  finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+ }else if(total===21){
+  bjPhase='dealer';
+  dealerTurn();
+ }
 }
+
 function standBlackjack(){
- if(!bjActive||bjBusy)return;
- bjBusy=true;dealerTurn();
+ if(bjPhase!=='playing')return;
+
+ bjPhase='dealer';
+ dealerTurn();
 }
+
 $('bjStart').addEventListener('click',startBlackjack);
 $('bjDouble').addEventListener('click',doubleBlackjack);
 $('bjKeep').addEventListener('click',continueInitialBet);
@@ -486,12 +569,14 @@ function drawChart(){
  g.beginPath();g.arc(lastX,lastY,5,0,Math.PI*2);g.fillStyle=lineColor;g.fill();
  g.fillStyle='#9eacc2';g.fillText('Anterior',pad.l,h-7);g.textAlign='right';g.fillText('Actual',w-pad.r,h-7);g.textAlign='left';
 }
+
 function updateHistory(){
  $('marketHistory').innerHTML=marketHistory.length?marketHistory.map(m=>
   `<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>🍌 ${m.price.toFixed(2)}</strong></div>`
  ).join(''):'Todavía no hubo movimientos.';
  $('moveCount').textContent=marketHistory.length;
 }
+
 function marketTick(){
  let chanceUp=.5;if(phase===0)chanceUp=.6;if(phase===1)chanceUp=.4;
  const up=Math.random()<chanceUp;
@@ -502,6 +587,7 @@ function marketTick(){
  priceHistory.push(price);if(priceHistory.length>300)priceHistory.shift();
  updateHistory();updateWallet();drawChart();
 }
+
 $('buy').addEventListener('click',()=>{
  const amount=Number($('tradeAmount').value);
  if(!Number.isFinite(amount)||amount<=0){$('marketResult').textContent='Ingresá una cantidad válida.';return}
@@ -509,6 +595,7 @@ $('buy').addEventListener('click',()=>{
  const bought=amount/price;bananas-=amount;franCoins+=bought;updateWallet();
  $('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por 🍌 ${amount.toFixed(2)}.</span>`;
 });
+
 $('sell').addEventListener('click',()=>{
  if(franCoins<=0){$('marketResult').textContent='No tenés FranCoins para vender.';return}
  const received=franCoins*price,sold=franCoins;
