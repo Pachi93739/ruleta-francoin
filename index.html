@@ -62,7 +62,38 @@ function updateWallet(){
 const wheel=$('wheel'),ctx=wheel.getContext('2d'),slices=Array.from({length:25},(_,i)=>i===24?'Verde':i%2===0?'Rojo':'Negro');
 function drawWheel(){const cx=300,cy=300,r=285,step=2*Math.PI/25;slices.forEach((c,i)=>{const a=-Math.PI/2+i*step,b=a+step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,b);ctx.closePath();ctx.fillStyle=c==='Rojo'?'#cf3441':c==='Negro'?'#17191e':'#16834a';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();});ctx.beginPath();ctx.arc(cx,cy,37,0,Math.PI*2);ctx.fillStyle='#e5c36b';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.stroke();}drawWheel();
 document.querySelectorAll('.color').forEach(btn=>btn.addEventListener('click',()=>{if(spinning)return;selected=btn.dataset.color;document.querySelectorAll('.color').forEach(b=>b.classList.toggle('active',b===btn));}));
-$('spin').addEventListener('click',()=>{if(spinning)return;const bet=Number($('bet').value);if(!Number.isInteger(bet)||bet<1||bet>bananas){$('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus bananas.';return;}spinning=true;$('spin').disabled=true;const index=Math.floor(Math.random()*25),color=slices[index],win=color===selected,payout=win?bet*(color==='Verde'?25:2):0;rotation+=360*6+(360-(index*(360/25)+(360/25)/2));wheel.style.transform=`rotate(${rotation}deg)`;setTimeout(()=>{bananas=bananas-bet+payout;updateWallet();$('rouletteResult').innerHTML=win?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`:`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;spinning=false;$('spin').disabled=false;},4100);});
+
+$('spin').addEventListener('click',()=>{
+  if(spinning)return;
+  const bet=Number($('bet').value);
+  if(!Number.isInteger(bet)||bet<1||bet>bananas){
+    $('rouletteResult').textContent='Ingresá una apuesta entera válida que no supere tus bananas.';
+    return;
+  }
+  spinning=true;
+  $('spin').disabled=true;
+  
+  const index=Math.floor(Math.random()*25);
+  const color=slices[index];
+  const win=color===selected;
+  const payout=win?bet*(color==='Verde'?25:2):0;
+  
+  // Corrección para alinear exactamente el sector elegido con el puntero superior
+  const degPerSlice = 360 / 25;
+  const targetAngle = 360 - (index * degPerSlice + degPerSlice / 2);
+  rotation += 360 * 6 + (targetAngle - (rotation % 360));
+  
+  wheel.style.transform=`rotate(${rotation}deg)`;
+  
+  setTimeout(()=>{
+    bananas=bananas-bet+payout;
+    updateWallet();
+    $('rouletteResult').innerHTML=win?`<strong class="good">¡ACERTASTE! ${color} · +🍌 ${(payout-bet).toFixed(2)}</strong><br>Premio total: 🍌 ${payout.toFixed(2)}`:`<strong class="bad">Salió ${color}. Perdiste 🍌 ${bet.toFixed(2)}.</strong>`;
+    spinning=false;
+    $('spin').disabled=false;
+  },4100);
+});
+
 function drawChart(){
  const c=$('chart'),g=c.getContext('2d'),w=c.width,h=c.height,pad={l:55,r:15,t:15,b:28};
  g.clearRect(0,0,w,h);g.fillStyle='#111a29';g.fillRect(0,0,w,h);
@@ -73,13 +104,26 @@ function drawChart(){
  const xStep=(w-pad.l-pad.r)/(vals.length-1);
  const yFor=v=>pad.t+(max-v)/range*(h-pad.t-pad.b);
  g.beginPath();vals.forEach((v,i)=>{const x=pad.l+i*xStep,y=yFor(v);if(i===0)g.moveTo(x,y);else g.lineTo(x,y);});
- g.strokeStyle='#f4cc68';g.lineWidth=3;g.stroke();
- const lastX=pad.l+(vals.length-1)*xStep,lastY=yFor(vals[vals.length-1]);g.beginPath();g.arc(lastX,lastY,5,0,Math.PI*2);g.fillStyle='#f4cc68';g.fill();
+ 
+ // Color dinámico: Verde si sube o se mantiene, Rojo si baja
+ const isUp = vals.length > 1 ? vals[vals.length - 1] >= vals[vals.length - 2] : true;
+ const lineColor = isUp ? '#70e6a0' : '#ff818b';
+ 
+ g.strokeStyle = lineColor;
+ g.lineWidth = 3;
+ g.stroke();
+ 
+ const lastX=pad.l+(vals.length-1)*xStep,lastY=yFor(vals[vals.length-1]);
+ g.beginPath();
+ g.arc(lastX,lastY,5,0,Math.PI*2);
+ g.fillStyle = lineColor;
+ g.fill();
+ 
  g.fillStyle='#9eacc2';g.fillText('Anterior',pad.l,h-7);g.textAlign='right';g.fillText('Actual',w-pad.r,h-7);g.textAlign='left';
 }
+
 function updateHistory(){$('marketHistory').innerHTML=marketHistory.length?marketHistory.map(m=>`<div class="history-row"><span>${m.up?'📈':'📉'} ${m.change}</span><strong>🍌 ${m.price.toFixed(2)}</strong></div>`).join(''):'Todavía no hubo movimientos.';$('moveCount').textContent=marketHistory.length;}
 function marketTick(){
- // Etapa oculta: alcista 60/40, bajista 40/60, neutra 50/50.
  const chanceUp=phase===0?.60:phase===1?.40:.50,up=Math.random()<chanceUp;
  price=Math.max(.01,price*(up?1.10:.90));const change=up?'+10%':'−10%';
  $('movement').innerHTML=`<span class="${up?'good':'bad'}">${up?'📈 Subió':'📉 Bajó'} ${change}</span>`;
