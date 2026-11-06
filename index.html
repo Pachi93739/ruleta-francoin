@@ -781,33 +781,200 @@ function startBlackjack(){
    finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
   }
  }
+
+// BLACKJACK
+
+let bjPlayer=[];
+let bjDealer=[];
+let bjBet=0;
+let bjActive=false;
+let bjActionLocked=false;
+
+function drawCard(){
+ const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+ const suits=['♠','♥','♦','♣'];
+ return {
+  rank:ranks[Math.floor(Math.random()*ranks.length)],
+  suit:suits[Math.floor(Math.random()*suits.length)]
+ };
+}
+
+function handValue(hand){
+ let total=0;
+ let aces=0;
+
+ hand.forEach(card=>{
+  if(card.rank==='A'){
+   total+=11;
+   aces++;
+  }else if(['K','Q','J'].includes(card.rank)){
+   total+=10;
+  }else{
+   total+=Number(card.rank);
+  }
+ });
+
+ while(total>21&&aces>0){
+  total-=10;
+  aces--;
+ }
+
+ return total;
+}
+
+function renderCards(revealDealer=false){
+ const dealerHidden=bjActive&&!revealDealer;
+
+ $('playerCards').innerHTML=bjPlayer.map(card=>
+  `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
+   ${card.rank}${card.suit}
+  </div>`
+ ).join('');
+
+ $('dealerCards').innerHTML=bjDealer.map((card,index)=>{
+  if(dealerHidden&&index===1){
+   return '<div class="playing-card hidden-card">?</div>';
+  }
+
+  return `<div class="playing-card ${['♥','♦'].includes(card.suit)?'red-card':''}">
+   ${card.rank}${card.suit}
+  </div>`;
+ }).join('');
+
+ $('playerScore').textContent='Puntos: '+handValue(bjPlayer);
+
+ $('dealerScore').textContent=dealerHidden
+  ?'Puntos: '+handValue([bjDealer[0]])+' + ?'
+  :'Puntos: '+handValue(bjDealer);
+}
+
+function lockBjButtons(locked){
+ bjActionLocked=locked;
+ $('bjDouble').disabled=locked;
+ $('bjKeep').disabled=locked;
+ $('bjHit').disabled=locked;
+ $('bjStand').disabled=locked;
+}
+
+function finishBlackjack(message,type){
+ bjActive=false;
+ lockBjButtons(false);
+
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='none';
+
+ $('bjResult').innerHTML=
+ `<strong class="${type}">${message}</strong>`;
+
+ renderCards(true);
+ updateWallet();
+}
+
+function dealerTurn(){
+ $('bjDecision').style.display='none';
+ $('bjPlay').style.display='none';
+
+ renderCards(true);
+
+ while(handValue(bjDealer)<17){
+  bjDealer.push(drawCard());
+ }
+
+ renderCards(true);
+
+ const playerTotal=handValue(bjPlayer);
+ const dealerTotal=handValue(bjDealer);
+
+ if(dealerTotal>21){
+  bananas+=bjBet*2;
+  finishBlackjack('¡El dealer se pasó! Ganaste 🍌 '+(bjBet*2).toFixed(2),'good');
+ }else if(playerTotal>dealerTotal){
+  bananas+=bjBet*2;
+  finishBlackjack('¡Ganaste! 🍌 '+(bjBet*2).toFixed(2),'good');
+ }else if(playerTotal===dealerTotal){
+  bananas+=bjBet;
+  finishBlackjack('Empate. Recuperaste tu apuesta.','');
+ }else{
+  finishBlackjack('Ganó el dealer. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+ }
+}
+
+function startBlackjack(){
+ if(bjActive||bjActionLocked)return;
+
+ const bet=Number($('bjBet').value);
+
+ if(!Number.isInteger(bet)||bet<1||bet>bananas){
+  $('bjResult').textContent='Ingresá una apuesta entera válida.';
+  return;
+ }
+
+ bananas-=bet;
+ bjBet=bet;
+
+ bjPlayer=[drawCard(),drawCard()];
+ bjDealer=[drawCard(),drawCard()];
+
+ bjActive=true;
+ lockBjButtons(false);
+
+ $('bjDecision').style.display='grid';
+ $('bjPlay').style.display='none';
+ $('bjResult').textContent='¿Querés duplicar la apuesta o seguir con la inicial?';
+
+ renderCards();
+ updateWallet();
+
+ const playerNatural=handValue(bjPlayer)===21;
+ const dealerNatural=handValue(bjDealer)===21;
+
+ if(playerNatural||dealerNatural){
+  if(playerNatural&&dealerNatural){
+   bananas+=bjBet;
+   finishBlackjack('¡Empate! Ambos tienen Blackjack.','');
+  }else if(playerNatural){
+   bananas+=bjBet*2.5;
+   finishBlackjack('¡BLACKJACK! Ganaste 🍌 '+(bjBet*2.5).toFixed(2),'good');
+  }else{
+   finishBlackjack('El dealer tiene Blackjack. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
+  }
+ }
 }
 
 function continueInitialBet(){
+ if(!bjActive||bjActionLocked)return;
 
- if(!bjActive)return;
+ lockBjButtons(true);
 
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='grid';
 
  $('bjResult').textContent='Podés pedir cartas o plantarte.';
+
+ lockBjButtons(false);
 }
 
 function doubleBlackjack(){
+ if(!bjActive||bjActionLocked)return;
 
- if(!bjActive)return;
+ lockBjButtons(true);
 
  if(bananas<bjBet){
   $('bjResult').textContent='No tenés suficientes bananas para duplicar.';
+  lockBjButtons(false);
   return;
  }
 
+ // Cobrar la apuesta adicional.
  bananas-=bjBet;
  bjBet*=2;
 
- bjPlayer.push(drawCard());
-
+ // Ocultar las opciones antes de repartir la carta.
  $('bjDecision').style.display='none';
+ $('bjPlay').style.display='none';
+
+ // Al duplicar, recibís exactamente UNA carta.
+ bjPlayer.push(drawCard());
 
  renderCards();
  updateWallet();
@@ -817,13 +984,14 @@ function doubleBlackjack(){
   return;
  }
 
- // Al duplicar, recibís una sola carta y termina tu turno.
+ // Termina tu turno y juega el dealer.
  dealerTurn();
 }
 
 function hitBlackjack(){
+ if(!bjActive||bjActionLocked)return;
 
- if(!bjActive)return;
+ lockBjButtons(true);
 
  bjPlayer.push(drawCard());
  renderCards();
@@ -834,13 +1002,15 @@ function hitBlackjack(){
   finishBlackjack('Te pasaste de 21. Perdiste 🍌 '+bjBet.toFixed(2),'bad');
  }else if(total===21){
   dealerTurn();
+ }else{
+  lockBjButtons(false);
  }
 }
 
 function standBlackjack(){
+ if(!bjActive||bjActionLocked)return;
 
- if(!bjActive)return;
-
+ lockBjButtons(true);
  dealerTurn();
 }
 
@@ -849,6 +1019,7 @@ $('bjDouble').addEventListener('click',doubleBlackjack);
 $('bjKeep').addEventListener('click',continueInitialBet);
 $('bjHit').addEventListener('click',hitBlackjack);
 $('bjStand').addEventListener('click',standBlackjack);
+
 
 // GRÁFICO
 
