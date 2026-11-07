@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Banana Casino</title>
+<title>FranCasino</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:20px;background:radial-gradient(circle at top,#283653,#101522 68%);color:#f5f7fb;font-family:system-ui,Segoe UI,sans-serif}
@@ -198,8 +198,8 @@ canvas#chart{width:100%;height:220px;display:block}
 <div class="stage-price">💰 Precio del cambio: <span id="stageCost">$ 1000.00</span></div>
 <div class="stage-status" id="stageStatus">❔ Etapa desconocida</div>
 <div class="stage-buttons">
-<button class="stage-btn stage-good" id="goodStage">📈 BUENA<small>60% subir</small></button>
-<button class="stage-btn stage-bad" id="badStage">📉 MALA<small>60% bajar</small></button>
+<button class="stage-btn stage-good" id="goodStage">📈 BUENA<small>70% subir</small></button>
+<button class="stage-btn stage-bad" id="badStage">📉 MALA<small>70% bajar</small></button>
 <button class="stage-btn stage-neutral" id="neutralStage">⚖️ NEUTRA<small>50% / 50%</small></button>
 </div>
 <p class="muted" style="text-align:center;margin-top:12px">Cada cambio cuesta 100 veces el precio actual de una FranCoin y dura 15 segundos.</p>
@@ -230,7 +230,7 @@ canvas#chart{width:100%;height:220px;display:block}
 
 <script>
 const $=id=>document.getElementById(id);
-const SAVE_KEY='bananaCasinoSave';
+const SAVE_KEY='franCasinoSaveV2';
 
 function showPage(which){
  $('roulette').classList.toggle('active',which==='roulette');
@@ -253,6 +253,9 @@ function randomStage(){return Math.floor(Math.random()*3)}
 let phase=randomStage(),manualStage=false,phaseSeconds=15,moveSeconds=3;
 let marketHistory=[],priceHistory=[10];
 
+let bjPlayer=[],bjDealer=[],bjBet=0,bjActive=false;
+let bjPhase='idle';
+
 function updateUpgrade(){
  $('upgradeLevel').textContent=upgrades;
  $('upgradeCost').textContent='$ '+upgradeCost().toFixed(2);
@@ -267,8 +270,8 @@ function updateUpgrade(){
 function stageCost(){return price*100}
 
 function stageName(){
- if(phase===0)return '📈 Etapa buena · 60% subir / 40% bajar';
- if(phase===1)return '📉 Etapa mala · 40% subir / 60% bajar';
+ if(phase===0)return '📈 Etapa buena · 70% subir / 30% bajar';
+ if(phase===1)return '📉 Etapa mala · 30% subir / 70% bajar';
  return '⚖️ Etapa neutra · 50% / 50%';
 }
 
@@ -447,9 +450,6 @@ $('upgradeBtn').addEventListener('click',()=>{
 });
 
 // BLACKJACK
-let bjPlayer=[],bjDealer=[],bjBet=0,bjActive=false;
-let bjPhase='idle';
-
 function drawCard(){
  const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
  const suits=['♠','♥','♦','♣'];
@@ -714,8 +714,8 @@ function updateHistory(){
 // MERCADO
 function marketTick(){
  let chanceUp=.5;
- if(phase===0)chanceUp=.6;
- if(phase===1)chanceUp=.4;
+ if(phase===0)chanceUp=.7;
+ if(phase===1)chanceUp=.3;
 
  const up=Math.random()<chanceUp;
  price=Math.max(.01,price*(up?1.10:.90));
@@ -805,13 +805,13 @@ function loadGame(){
 
   const d=JSON.parse(raw);
 
-  if(typeof d.bananas==='number')bananas=d.bananas;
-  if(typeof d.franCoins==='number')franCoins=d.franCoins;
-  if(typeof d.price==='number')price=d.price;
+  if(typeof d.bananas==='number'&&Number.isFinite(d.bananas))bananas=d.bananas;
+  if(typeof d.franCoins==='number'&&Number.isFinite(d.franCoins))franCoins=d.franCoins;
+  if(typeof d.price==='number'&&Number.isFinite(d.price)&&d.price>0)price=d.price;
   if(typeof d.selected==='string')selected=d.selected;
   if(typeof d.rotation==='number')rotation=d.rotation;
-  if(typeof d.upgrades==='number')upgrades=d.upgrades;
-  if(typeof d.multiplierLevel==='number')multiplierLevel=d.multiplierLevel;
+  if(typeof d.upgrades==='number'&&d.upgrades>=0)upgrades=d.upgrades;
+  if(typeof d.multiplierLevel==='number'&&d.multiplierLevel>=1)multiplierLevel=d.multiplierLevel;
   if(d.wheelSpeed===1||d.wheelSpeed===2)wheelSpeed=d.wheelSpeed;
 
   if([0,1,2].includes(d.phase))phase=d.phase;
@@ -870,28 +870,21 @@ function loadGame(){
 
 // REINICIAR TODO
 function resetEverything(){
- // Borrar guardado anterior
- localStorage.removeItem(SAVE_KEY);
-
- // Detener procesos de juego
  stopAutoSpin();
  spinning=false;
  $('spin').disabled=false;
  $('speedBtn').disabled=false;
 
- // Dinero y FranCoins
  bananas=100;
  franCoins=0;
  price=10;
 
- // Ruleta y mejoras
  selected='Rojo';
  rotation=0;
  wheelSpeed=1;
  upgrades=0;
  multiplierLevel=1;
 
- // Mercado
  phase=randomStage();
  manualStage=false;
  phaseSeconds=15;
@@ -899,24 +892,22 @@ function resetEverything(){
  marketHistory=[];
  priceHistory=[10];
 
- // Blackjack
  bjPlayer=[];
  bjDealer=[];
  bjBet=0;
  bjActive=false;
  bjPhase='idle';
 
- // Valores de las apuestas
  $('bet').value=10;
  $('bjBet').value=10;
  $('tradeAmount').value=10;
 
- // Reiniciar interfaz
  document.querySelectorAll('.color').forEach(btn=>{
   btn.classList.toggle('active',btn.dataset.color==='Rojo');
  });
 
  wheel.style.transform='rotate(0deg)';
+ wheel.style.transitionDuration='4s';
 
  $('rouletteResult').textContent='Elegí tu color y girá.';
  $('bjResult').textContent='Hacé tu apuesta para empezar.';
@@ -931,12 +922,16 @@ function resetEverything(){
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='none';
 
+ $('nextMove').textContent='3 s';
+ $('moveCount').textContent='0';
+ $('stageStatus').textContent='❔ Etapa desconocida';
+
  updateWallet();
  updateHistory();
  updateWheelSpeed();
  drawChart();
 
- // Guardar el nuevo estado inicial
+ localStorage.removeItem(SAVE_KEY);
  saveGame();
 
  alert('¡Casino reiniciado! Volviste a tener $100 y 0 FranCoins.');
@@ -955,7 +950,6 @@ drawChart();
 updateWheelSpeed();
 
 setInterval(saveGame,1000);
-
 window.addEventListener('pagehide',saveGame);
 
 document.addEventListener('visibilitychange',()=>{
