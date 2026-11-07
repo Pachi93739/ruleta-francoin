@@ -84,6 +84,7 @@ canvas#chart{width:100%;height:220px;display:block}
 .bj-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .bj-controls .action{margin-top:8px}
 .foot{text-align:center;color:#8f9db2;font-size:11px;margin:18px 0}
+.reset-btn{background:#a8323e;color:white;margin-bottom:20px}
 @media(max-width:400px){
 .stage-buttons{gap:5px}
 .stage-btn{font-size:11px;padding:11px 3px}
@@ -95,7 +96,7 @@ canvas#chart{width:100%;height:220px;display:block}
 <body>
 <main>
 <header class="top">
-<h1>FranCasino</h1>
+<h1>🍌 Banana Casino</h1>
 <div class="muted">Ruleta, Blackjack y mercado FranCoin · simulador de puntos</div>
 </header>
 
@@ -206,7 +207,9 @@ canvas#chart{width:100%;height:220px;display:block}
 </div>
 <div class="history"><strong>Últimos movimientos</strong><div id="marketHistory">Todavía no hubo movimientos.</div></div>
 </section>
+
 <p class="foot">Todo usa pesos ficticios. Las etapas automáticas cambian cada 15 segundos.</p>
+<button class="action reset-btn" id="resetGame">🗑️ REINICIAR TODO</button>
 </main>
 
 <script>
@@ -272,7 +275,7 @@ function changeStage(newPhase){
   $('marketResult').innerHTML='<span class="bad">No tenés suficientes pesos. Necesitás $ '+cost.toFixed(2)+'.</span>';return;
  }
  bananas-=cost;phase=newPhase;manualStage=true;phaseSeconds=15;
- updateWallet();
+ updateWallet();saveGame();
  $('marketResult').innerHTML='<span class="good">¡Etapa cambiada! '+stageName()+'. Dura 15 segundos.</span>';
 }
 $('goodStage').addEventListener('click',()=>changeStage(0));
@@ -301,6 +304,7 @@ document.querySelectorAll('.color').forEach(btn=>{
   if(spinning)return;
   selected=btn.dataset.color;
   document.querySelectorAll('.color').forEach(b=>b.classList.toggle('active',b===btn));
+  saveGame();
  });
 });
 
@@ -313,7 +317,7 @@ function updateWheelSpeed(){
 }
 $('speedBtn').addEventListener('click',()=>{
  wheelSpeed=wheelSpeed===1?2:1;
- updateWheelSpeed();
+ updateWheelSpeed();saveGame();
 });
 
 let autoSpinning=false;
@@ -334,6 +338,7 @@ function spinRound(){
  const degPerSlice=360/25,targetAngle=360-(index*degPerSlice+degPerSlice/2);
  rotation+=360*6+(targetAngle-(rotation%360));
  wheel.style.transform=`rotate(${rotation}deg)`;
+ const spinDuration=4000/wheelSpeed;
 
  setTimeout(()=>{
   bananas=bananas-bet+payout;updateWallet();
@@ -341,12 +346,13 @@ function spinRound(){
    ?`<strong class="good">¡ACERTASTE! ${color} · +$ ${(payout-bet).toFixed(2)}</strong><br>Premio total: $ ${payout.toFixed(2)}`
    :`<strong class="bad">Salió ${color}. Perdiste $ ${bet.toFixed(2)}.</strong>`;
   spinning=false;$('spin').disabled=false;updateUpgrade();
+  saveGame();
   if(autoSpinning){
    if(bananas>=Number($('bet').value)){
     setTimeout(()=>{if(autoSpinning)spinRound()},400);
    }else stopAutoSpin('Auto Spin detenido: no tenés suficientes pesos.');
   }
- },(4000/wheelSpeed)+100);
+ },spinDuration+100);
 }
 $('spin').addEventListener('click',()=>{if(!spinning)spinRound()});
 $('autoSpin').addEventListener('click',()=>{
@@ -360,7 +366,7 @@ $('upgradeBtn').addEventListener('click',()=>{
  const cost=upgradeCost();
  if(bananas<cost)return;
  const increase=nextUpgradeIncrease();
- bananas-=cost;upgrades++;multiplierLevel+=increase;updateWallet();
+ bananas-=cost;upgrades++;multiplierLevel+=increase;updateWallet();saveGame();
  $('rouletteResult').innerHTML='<strong class="good">⚡ ¡MEJORA COMPRADA! Se sumó +'+increase.toFixed(5)+' al multiplicador.</strong>';
 });
 
@@ -412,7 +418,7 @@ function finishBlackjack(message,type=''){
  $('bjPlay').style.display='none';
  $('bjResult').innerHTML=`<strong class="${type}">${message}</strong>`;
  renderCards(true);
- updateWallet();
+ updateWallet();saveGame();
 }
 
 function dealerTurn(){
@@ -420,13 +426,11 @@ function dealerTurn(){
 
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='none';
-
  renderCards(true);
 
  while(handValue(bjDealer)<17)bjDealer.push(drawCard());
 
  renderCards(true);
-
  const p=handValue(bjPlayer),d=handValue(bjDealer);
 
  if(d>21){
@@ -445,7 +449,6 @@ function dealerTurn(){
 
 function startBlackjack(){
  if(bjPhase==='decision'||bjPhase==='playing'||bjPhase==='dealer')return;
-
  const bet=Number($('bjBet').value);
 
  if(!Number.isInteger(bet)||bet<1||bet>bananas){
@@ -455,10 +458,8 @@ function startBlackjack(){
 
  bjBet=bet;
  bananas-=bet;
-
  bjPlayer=[drawCard(),drawCard()];
  bjDealer=[drawCard(),drawCard()];
-
  bjActive=true;
  bjPhase='decision';
 
@@ -466,8 +467,7 @@ function startBlackjack(){
  $('bjPlay').style.display='none';
  $('bjResult').textContent='Cada uno tiene una carta oculta. ¿Querés duplicar o seguir con la apuesta inicial?';
 
- renderCards();
- updateWallet();
+ renderCards();updateWallet();saveGame();
 
  const playerNatural=handValue(bjPlayer)===21;
  const dealerNatural=handValue(bjDealer)===21;
@@ -487,43 +487,32 @@ function startBlackjack(){
 
 function continueInitialBet(){
  if(bjPhase!=='decision')return;
-
  bjPhase='playing';
-
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='grid';
  $('bjResult').textContent='Tu segunda carta ya está descubierta. Podés pedir cartas o plantarte.';
-
- renderCards();
+ renderCards();saveGame();
 }
 
 function doubleBlackjack(){
  if(bjPhase!=='decision')return;
-
  if(bananas<bjBet){
   $('bjResult').textContent='No tenés suficientes pesos para duplicar.';
   return;
  }
-
  bananas-=bjBet;
  bjBet*=2;
  bjPhase='playing';
-
  $('bjDecision').style.display='none';
  $('bjPlay').style.display='grid';
-
  $('bjResult').textContent='¡Apuesta duplicada! Podés pedir carta o plantarte.';
-
- renderCards();
- updateWallet();
+ renderCards();updateWallet();saveGame();
 }
 
 function hitBlackjack(){
  if(bjPhase!=='playing')return;
-
  bjPlayer.push(drawCard());
  renderCards();
-
  const total=handValue(bjPlayer);
 
  if(total>21){
@@ -531,12 +520,11 @@ function hitBlackjack(){
  }else if(total===21){
   bjPhase='dealer';
   dealerTurn();
- }
+ }else saveGame();
 }
 
 function standBlackjack(){
  if(bjPhase!=='playing')return;
-
  bjPhase='dealer';
  dealerTurn();
 }
@@ -579,41 +567,168 @@ function updateHistory(){
 }
 
 function marketTick(){
- let chanceUp=.5;if(phase===0)chanceUp=.6;if(phase===1)chanceUp=.4;
+ let chanceUp=.5;
+ if(phase===0)chanceUp=.6;
+ if(phase===1)chanceUp=.4;
  const up=Math.random()<chanceUp;
  price=Math.max(.01,price*(up?1.10:.90));
  const change=up?'+10%':'−10%';
  $('movement').innerHTML=`<span class="${up?'good':'bad'}">${up?'📈 Subió':'📉 Bajó'} ${change}</span>`;
- marketHistory.unshift({up,change,price});marketHistory=marketHistory.slice(0,8);
- priceHistory.push(price);if(priceHistory.length>300)priceHistory.shift();
- updateHistory();updateWallet();drawChart();
+ marketHistory.unshift({up,change,price});
+ marketHistory=marketHistory.slice(0,8);
+ priceHistory.push(price);
+ if(priceHistory.length>300)priceHistory.shift();
+ updateHistory();updateWallet();drawChart();saveGame();
 }
 
 $('buy').addEventListener('click',()=>{
  const amount=Number($('tradeAmount').value);
  if(!Number.isFinite(amount)||amount<=0){$('marketResult').textContent='Ingresá una cantidad válida.';return}
  if(amount>bananas){$('marketResult').textContent='No tenés suficientes pesos.';return}
- const bought=amount/price;bananas-=amount;franCoins+=bought;updateWallet();
+ const bought=amount/price;
+ bananas-=amount;franCoins+=bought;
+ updateWallet();saveGame();
  $('marketResult').innerHTML=`<span class="good">Compraste ${bought.toFixed(3)} FranCoins por $ ${amount.toFixed(2)}.</span>`;
 });
 
 $('sell').addEventListener('click',()=>{
  if(franCoins<=0){$('marketResult').textContent='No tenés FranCoins para vender.';return}
  const received=franCoins*price,sold=franCoins;
- bananas+=received;franCoins=0;updateWallet();
+ bananas+=received;franCoins=0;
+ updateWallet();saveGame();
  $('marketResult').innerHTML=`<span class="good">Vendiste ${sold.toFixed(3)} FranCoins y recibiste $ ${received.toFixed(2)}.</span>`;
 });
 
+// GUARDADO Y CARGA
+const SAVE_KEY='bananaCasinoSave';
+
+function saveGame(){
+ // No guardar una ruleta a medio giro.
+ if(spinning)return;
+
+ try{
+  const data={
+   bananas,franCoins,price,selected,rotation,
+   upgrades,multiplierLevel,wheelSpeed,
+   phase,manualStage,phaseSeconds,moveSeconds,
+   marketHistory,priceHistory,
+   bjPlayer,bjDealer,bjBet,bjActive,bjPhase,
+   bet:$('bet').value,
+   bjBetInput:$('bjBet').value,
+   tradeAmount:$('tradeAmount').value
+  };
+  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+ }catch(e){
+  console.warn('No se pudo guardar el progreso:',e);
+ }
+}
+
+function loadGame(){
+ try{
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return;
+  const d=JSON.parse(raw);
+
+  if(typeof d.bananas==='number')bananas=d.bananas;
+  if(typeof d.franCoins==='number')franCoins=d.franCoins;
+  if(typeof d.price==='number')price=d.price;
+  if(typeof d.selected==='string')selected=d.selected;
+  if(typeof d.rotation==='number')rotation=d.rotation;
+  if(typeof d.upgrades==='number')upgrades=d.upgrades;
+  if(typeof d.multiplierLevel==='number')multiplierLevel=d.multiplierLevel;
+  if(d.wheelSpeed===1||d.wheelSpeed===2)wheelSpeed=d.wheelSpeed;
+
+  if([0,1,2].includes(d.phase))phase=d.phase;
+  manualStage=!!d.manualStage;
+  if(typeof d.phaseSeconds==='number')phaseSeconds=d.phaseSeconds;
+  if(typeof d.moveSeconds==='number')moveSeconds=d.moveSeconds;
+
+  if(Array.isArray(d.marketHistory))marketHistory=d.marketHistory;
+  if(Array.isArray(d.priceHistory)&&d.priceHistory.length)priceHistory=d.priceHistory;
+
+  if(Array.isArray(d.bjPlayer))bjPlayer=d.bjPlayer;
+  if(Array.isArray(d.bjDealer))bjDealer=d.bjDealer;
+  if(typeof d.bjBet==='number')bjBet=d.bjBet;
+  bjActive=!!d.bjActive;
+  if(['idle','decision','playing','finished'].includes(d.bjPhase)){
+   bjPhase=d.bjPhase;
+  }
+
+  if(d.bet!==undefined)$('bet').value=d.bet;
+  if(d.bjBetInput!==undefined)$('bjBet').value=d.bjBetInput;
+  if(d.tradeAmount!==undefined)$('tradeAmount').value=d.tradeAmount;
+
+  document.querySelectorAll('.color').forEach(btn=>{
+   btn.classList.toggle('active',btn.dataset.color===selected);
+  });
+
+  wheel.style.transform=`rotate(${rotation}deg)`;
+
+  if(bjPhase==='decision'){
+   $('bjDecision').style.display='grid';
+   $('bjPlay').style.display='none';
+   $('bjResult').textContent='Partida recuperada. Elegí si querés duplicar o seguir.';
+   renderCards();
+  }else if(bjPhase==='playing'){
+   $('bjDecision').style.display='none';
+   $('bjPlay').style.display='grid';
+   $('bjResult').textContent='Partida recuperada. Podés pedir carta o plantarte.';
+   renderCards();
+  }else if(bjPhase==='finished'){
+   $('bjDecision').style.display='none';
+   $('bjPlay').style.display='none';
+   renderCards(true);
+  }
+
+  updateHistory();
+  updateWallet();
+  updateWheelSpeed();
+ }catch(e){
+  console.warn('No se pudo recuperar el progreso:',e);
+ }
+}
+
+// Cargar partida guardada
+loadGame();
+
+// Guardar automáticamente cada segundo
+setInterval(saveGame,1000);
+
+// Guardar al salir de la página
+window.addEventListener('pagehide',saveGame);
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='hidden')saveGame();
+});
+
+// Temporizador del mercado
 setInterval(()=>{
  moveSeconds--;
- if(moveSeconds<=0){marketTick();moveSeconds=3}
+ if(moveSeconds<=0){
+  marketTick();
+  moveSeconds=3;
+ }
  $('nextMove').textContent=moveSeconds+' s';
+
  phaseSeconds--;
- if(phaseSeconds<=0){phase=randomStage();manualStage=false;phaseSeconds=15}
+ if(phaseSeconds<=0){
+  phase=randomStage();
+  manualStage=false;
+  phaseSeconds=15;
+ }
  updateStageUI();
 },1000);
 
-updateWallet();drawChart();updateWheelSpeed();
+// REINICIAR TODO
+$('resetGame').addEventListener('click',()=>{
+ if(confirm('¿Seguro que querés reiniciar TODO? Se perderán tus pesos, mejoras, FranCoins e historial.')){
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+ }
+});
+
+updateWallet();
+drawChart();
+updateWheelSpeed();
 </script>
 </body>
 </html>
